@@ -1,14 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+// Third party libs
+import React from "react";
+import ReactDOM from "react-dom";
+
+// Internal imports
+import "./index.scss";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import ThemeContextProdiver from "./Reducers/ThemeContext";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ThemeContextProdiver>
+      <App />
+    </ThemeContextProdiver>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function
