@@ -1,5 +1,6 @@
 // Third party libs
-import React, { useContext } from "react";
+// import React, { useContext } from "react";
+import React, { useState } from "react";
 
 import {
   Avatar,
@@ -15,10 +16,11 @@ import {
   Typography,
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import { ThemeContext } from "../../Reducers/ThemeContext";
+// import { ThemeContext } from "../../Reducers/ThemeContext";
 
 // Internal imports
 import { useStyles } from "./LoginStyle";
+import LoginPresenter from "./LoginPresenter";
 
 function Copyright() {
   return (
@@ -34,9 +36,13 @@ function Copyright() {
 }
 
 function Login(args?: {}) {
-  const { theme, dispatch } = useContext(ThemeContext);
+  // const { theme, dispatch } = useContext(ThemeContext);
+
+  const { handleLogin } = LoginPresenter();
 
   const classes = useStyles();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   return (
     <Container component="main" maxWidth="xs">
@@ -54,11 +60,12 @@ function Login(args?: {}) {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
+            id="username"
+            label="User Name"
+            name="username"
+            autoComplete="username"
             autoFocus
+            onChange={(e) => setUsername(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -70,17 +77,19 @@ function Login(args?: {}) {
             type="password"
             id="password"
             autoComplete="current-password"
+            onChange={(e) => setPassword(e.target.value)}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
           <Button
-            type="submit"
+            // type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={() => handleLogin(username, password)}
           >
             Sign In
           </Button>
@@ -97,7 +106,7 @@ function Login(args?: {}) {
             </Grid>
           </Grid>
         </form>
-        <Button
+        {/* <Button
           // type="submit"
           fullWidth
           variant="contained"
@@ -106,7 +115,7 @@ function Login(args?: {}) {
           onClick={() => dispatch({ type: "DARK" })}
         >
           Dark Theme
-        </Button>
+        </Button> */}
       </div>
       <Box mt={8}>
         <Copyright />
