@@ -1,13 +1,29 @@
-import User from "../../models/user";
+import {
+  checkPassword,
+  createUser,
+  findUser,
+  getAllUsers,
+  upateUser,
+} from "../../mongoose/controller/user";
+import { dateScalar } from "../scalars/date";
+
+const secret = "fbslat";
 
 export default {
+  Date: dateScalar,
   Query: {
-    users: () => User.find(),
-    user: (_: any, { id }: any) => User.findById(id),
+    login: async (_: any, { nick, password }: any) =>
+      !!(await checkPassword({
+        secret: secret,
+        password: password,
+        userToCheck: { nick },
+      })),
+    users: () => getAllUsers(),
+    user: (_: any, { nick }: any) => findUser({ nick }),
+    // user: (_: any, { id }: any) => User.findById(id),
   },
   Mutation: {
-    createUser: (_: any, { data }: any) => User.create(data),
-    updateUser: (_: any, { id, data }: any) =>
-      User.findOneAndUpdate(id, data, { new: true }),
+    createUser: (_: any, { data }: any) => createUser(secret, data),
+    updateUser: (_: any, { id, data }: any) => upateUser(id, data),
   },
 };

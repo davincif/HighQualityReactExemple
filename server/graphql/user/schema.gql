@@ -1,19 +1,29 @@
+scalar Date
+
 type User {
   _id: String!
+  nick: String!
   name: String!
   password: String!
-  active: Boolean!
+  email: String!
+  birth: String!
+  active: Boolean
 }
 
 input UserInput {
+  nick: String!
   name: String!
   password: String!
+  email: String!
+  birth: Date!
   active: Boolean
 }
 
 type Query {
+  login(nick: String!, password: String!): Boolean
   users: [User]!
-  user(id: ID!): User
+  # user(id: ID!): User
+  user(nick: String!): User
 }
 
 type Mutation {

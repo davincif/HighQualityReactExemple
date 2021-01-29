@@ -2,11 +2,18 @@
 import mongoose from "mongoose";
 import { ApolloServer } from "apollo-server";
 
-const PORT = 4000;
+const APOLLO_PORT = 4000;
+const MONGO_USER = "fbroot";
+const MONGO_PASS = "fbmongopass";
+const MONGO_HOST = "localhost";
+const MONGO_PORT = "27017";
+const MONGO_DATABASE = "familly_bugget";
 
 const startServer = ({ typeDefs, resolvers }: any) => {
   // Mongo DB Connetion Establishment
-  mongoose.connect("mongodb://localhost:27017/graphql", {
+  const mongo_url = `mongodb://${MONGO_USER}:${MONGO_PASS}@${MONGO_HOST}:${MONGO_PORT}`;
+  console.log("mongo_url", mongo_url);
+  mongoose.connect(mongo_url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
@@ -19,7 +26,7 @@ const startServer = ({ typeDefs, resolvers }: any) => {
   // Opening Listener to Apollo Server
   const server = new ApolloServer({ typeDefs, resolvers });
   server
-    .listen({ port: PORT })
+    .listen({ port: APOLLO_PORT })
     .then(({ url }) => {
       console.log(`⚡ Server started at ${url}`);
     })
