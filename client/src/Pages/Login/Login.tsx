@@ -1,6 +1,5 @@
 // Third party libs
-// import React, { useContext } from "react";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import {
   Avatar,
@@ -17,6 +16,8 @@ import {
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 // import { ThemeContext } from "../../Reducers/ThemeContext";
+import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
+import { capitalize, capitalizeInitials } from "../../Reducers/Locale/Tools";
 
 // Internal imports
 import { useStyles } from "./LoginStyle";
@@ -37,6 +38,7 @@ function Copyright() {
 
 function Login(args?: {}) {
   // const { theme, dispatch } = useContext(ThemeContext);
+  const { language } = useContext(LocaleContext);
 
   const { handleLogin } = LoginPresenter();
 
@@ -61,7 +63,7 @@ function Login(args?: {}) {
             required
             fullWidth
             id="username"
-            label="User Name"
+            label={language.msgs.nick}
             name="username"
             autoComplete="username"
             autoFocus
@@ -73,7 +75,7 @@ function Login(args?: {}) {
             required
             fullWidth
             name="password"
-            label="Password"
+            label={language.msgs.password}
             type="password"
             id="password"
             autoComplete="current-password"
@@ -81,7 +83,7 @@ function Login(args?: {}) {
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
+            label={capitalize(language.msgs.remember_me)}
           />
           <Button
             // type="submit"
@@ -91,17 +93,19 @@ function Login(args?: {}) {
             className={classes.submit}
             onClick={() => handleLogin(username, password)}
           >
-            Sign In
+            {capitalizeInitials(language.msgs.sign_in)}
           </Button>
           <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
-                Forgot password?
+                {capitalize(language.msgs.forgot_password_q)}
               </Link>
             </Grid>
             <Grid item>
               <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
+                {/* {"Don't have an account? Sign Up"} */}
+                {capitalize(language.msgs.dont_have_an_account_q)}{" "}
+                {capitalizeInitials(language.msgs.sign_up)}
               </Link>
             </Grid>
           </Grid>

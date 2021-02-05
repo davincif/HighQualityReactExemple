@@ -1,6 +1,6 @@
 // Third party libs
-import { MuiThemeProvider } from "@material-ui/core/styles";
 import React, { createContext, useReducer } from "react";
+import { MuiThemeProvider } from "@material-ui/core/styles";
 
 // Internal imports
 import { ThemeReducer, initialState } from "./ThemeReducer";
