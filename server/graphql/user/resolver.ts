@@ -1,3 +1,4 @@
+import { UserInputError } from "apollo-server";
 import {
   checkPassword,
   createUser,
@@ -23,7 +24,15 @@ export default {
     // user: (_: any, { id }: any) => User.findById(id),
   },
   Mutation: {
-    createUser: (_: any, { data }: any) => createUser(secret, data),
+    createUser: async (_: any, { data }: any) => {
+      let user = await createUser(secret, data);
+
+      if (typeof user === "string") {
+        throw new UserInputError(user);
+      }
+
+      return user;
+    },
     updateUser: (_: any, { id, data }: any) => upateUser(id, data),
   },
 };

@@ -25,6 +25,12 @@ const UserSchema = new Schema({
     type: String,
     required: [true, "Field birth is required"],
   },
+  accessLevel: {
+    type: String,
+    enum: ["master", "family", "guest"],
+    default: "guest",
+    required: [true, "Fied accessLevel is required"],
+  },
   active: {
     type: Boolean,
     default: true,

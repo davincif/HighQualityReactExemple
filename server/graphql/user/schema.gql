@@ -7,6 +7,7 @@ type User {
   password: String!
   email: String!
   birth: String!
+  accessLevel: String
   active: Boolean
 }
 
@@ -16,6 +17,7 @@ input UserInput {
   password: String!
   email: String!
   birth: Date!
+  accessLevel: String
   active: Boolean
 }
 

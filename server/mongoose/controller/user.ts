@@ -6,7 +6,11 @@ import { Document } from "mongoose";
 
 // Local Imports
 import User from "../models/user";
-import { HollowUserMetadata, UserMetadata } from "../types/user";
+import {
+  HollowUserMetadata,
+  UserMetadata,
+  validAcessLevels,
+} from "../types/user";
 
 export const getAllUsers = () => User.find();
 
@@ -16,7 +20,13 @@ export const createUser = async (secret: string, data: UserMetadata) => {
     .update(data.password)
     .digest("hex");
 
+  // check if the given acess level is valid
+  if (!validAcessLevels.includes(data.accessLevel)) {
+    return `Acess Level '${data.accessLevel}' is not valid, possibles are '${validAcessLevels}'`;
+  }
+
   // create object on DB
+  console.log("// create object on DB");
   return await User.create(data);
 };
 
