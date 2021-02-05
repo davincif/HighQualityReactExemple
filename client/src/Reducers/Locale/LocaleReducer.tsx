@@ -1,6 +1,7 @@
 import { enMessages } from "./English";
 import { ptbrMessages } from "./BrasilianPortuguese";
 import { esMessages } from "./Spanish";
+import { ruMessages } from "./Russian";
 
 export const initialState = {
   code: "en",
@@ -24,8 +25,14 @@ export const LocaleReducer = (state: any, action: any) => {
         msgs: ptbrMessages,
       };
 
-    // case "ru":
-    //   return initialState;
+    case "ru":
+      return {
+        ...initialState,
+        code: "ru",
+        lang: "Russian",
+        name: "Русский",
+        msgs: ruMessages,
+      };
 
     case "es":
       return {

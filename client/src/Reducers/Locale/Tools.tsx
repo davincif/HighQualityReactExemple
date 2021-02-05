@@ -1,8 +1,10 @@
+const isLetter = RegExp(/^\p{L}/, "u");
+
 export const capitalize = (str: string) => {
   // finding the first letter in the string
   let nonLetters = 0;
   let char = str[nonLetters];
-  while (!/[a-zA-Z]/.test(char) && nonLetters < str.length) {
+  while (!isLetter.test(char) && nonLetters < str.length) {
     nonLetters++;
     char = str[nonLetters];
   }
