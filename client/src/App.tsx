@@ -8,6 +8,7 @@ import { onError } from "@apollo/client/link/error";
 // Components
 import Login from "./Pages/Login/Login";
 import NotFound from "./Pages/NotFound/NotFound";
+import SignUp from "./Pages/SignUp/SingUp";
 
 // Internal imports
 import "./App.scss";
@@ -36,6 +37,7 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/" component={Login}></Route>
+          <Route exact path="/signup" component={SignUp}></Route>
           <Route component={NotFound} />
         </Switch>
       </Router>

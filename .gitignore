@@ -27,6 +27,7 @@ yarn-error.log*
 **/node_modules/
 *.eslintcache*
 /trash
+/client/trash
+/server/trash
 **/dist/
 client/coverage/
-

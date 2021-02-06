@@ -1,4 +1,3 @@
-// import { useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { CHECK_USER } from "../../GraphQL/Queries";
 

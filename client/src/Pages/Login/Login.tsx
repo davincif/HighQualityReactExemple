@@ -15,10 +15,10 @@ import {
   Typography,
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
-import { capitalize, capitalizeInitials } from "../../Reducers/Locale/Tools";
 
 // Internal imports
+import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
+import { capitalize, capitalizeInitials } from "../../Reducers/Locale/Tools";
 import { useStyles } from "./LoginStyle";
 import LoginPresenter from "./LoginPresenter";
 import Navbar from "../../Components/Navbar/Navbar";
@@ -39,11 +39,11 @@ function Copyright() {
 function Login(props?: {}) {
   const { language } = useContext(LocaleContext);
 
-  const { handleLogin } = LoginPresenter();
+  const [usernick, setUsernick] = useState("");
+  const [password, setPassword] = useState("");
 
   const classes = useStyles();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const { handleLogin } = LoginPresenter();
 
   return (
     <div>
@@ -63,12 +63,12 @@ function Login(props?: {}) {
               margin="normal"
               required
               fullWidth
-              id="username"
+              id="usernick"
               label={language.msgs.nick}
-              name="username"
-              autoComplete="username"
+              name="usernick"
+              autoComplete="usernick"
               autoFocus
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setUsernick(e.target.value)}
             />
             <TextField
               variant="outlined"
@@ -92,7 +92,7 @@ function Login(props?: {}) {
               variant="contained"
               color="primary"
               className={classes.submit}
-              onClick={() => handleLogin(username, password)}
+              onClick={() => handleLogin(usernick, password)}
             >
               {capitalizeInitials(language.msgs.sign_in)}
             </Button>
@@ -103,7 +103,7 @@ function Login(props?: {}) {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/signup" variant="body2">
                   {/* {"Don't have an account? Sign Up"} */}
                   {capitalize(language.msgs.dont_have_an_account_q)}{" "}
                   {capitalizeInitials(language.msgs.sign_up)}

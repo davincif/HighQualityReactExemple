@@ -25,3 +25,10 @@ export const capitalize = (str: string) => {
 export const capitalizeInitials = (str: string) => {
   return str.split(" ").map(capitalize).join(" ");
 };
+
+export const fallbackBuilder = (
+  msgs: { [str: string]: string },
+  fallback: { [str: string]: string }
+) => {
+  return { ...fallback, ...msgs };
+};
