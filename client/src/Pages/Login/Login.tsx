@@ -1,11 +1,14 @@
 // Third party libs
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useLazyQuery } from "@apollo/client";
 
+// material-ui
 import {
   Avatar,
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Container,
   CssBaseline,
   FormControlLabel,
@@ -17,11 +20,11 @@ import {
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 
 // Internal imports
+import { useStyles } from "./LoginStyle";
 import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
 import { capitalize, capitalizeInitials } from "../../Reducers/Locale/Tools";
-import { useStyles } from "./LoginStyle";
-import LoginPresenter from "./LoginPresenter";
 import Navbar from "../../Components/Navbar/Navbar";
+import { USER_LOGIN } from "../../GraphQL/Queries";
 
 function Copyright() {
   return (
@@ -41,9 +44,31 @@ function Login(props?: {}) {
 
   const [usernick, setUsernick] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [user_login, { error, data }] = useLazyQuery(USER_LOGIN);
 
   const classes = useStyles();
-  const { handleLogin } = LoginPresenter();
+
+  useEffect(() => {
+    setLoading(false);
+
+    if (error) {
+      // code
+      console.log("error", error);
+    } else if (data) {
+      console.log("data", data);
+      if (data.login.allowed) {
+        console.log("ready to login");
+      }
+    }
+  }, [error, data]);
+
+  const handlerLogin = () => {
+    setLoading(true);
+    if (usernick && password) {
+      user_login({ variables: { nick: usernick, password: password } });
+    }
+  };
 
   return (
     <div>
@@ -69,6 +94,7 @@ function Login(props?: {}) {
               autoComplete="usernick"
               autoFocus
               onChange={(e) => setUsernick(e.target.value)}
+              disabled={loading}
             />
             <TextField
               variant="outlined"
@@ -81,10 +107,12 @@ function Login(props?: {}) {
               id="password"
               autoComplete="current-password"
               onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label={capitalize(language.msgs.remember_me)}
+              disabled={loading}
             />
             <Button
               // type="submit"
@@ -92,9 +120,14 @@ function Login(props?: {}) {
               variant="contained"
               color="primary"
               className={classes.submit}
-              onClick={() => handleLogin(usernick, password)}
+              onClick={handlerLogin}
+              disabled={loading}
             >
-              {capitalizeInitials(language.msgs.sign_in)}
+              {loading ? (
+                <CircularProgress />
+              ) : (
+                <div>{capitalizeInitials(language.msgs.sign_in)}</div>
+              )}
             </Button>
             <Grid container>
               <Grid item xs>

@@ -2,7 +2,7 @@
 import { useMutation } from "@apollo/client";
 
 // Internal imports
-import { CREATE_USER } from "../../GraphQL/Queries";
+import { USER_CREATE } from "../../GraphQL/Queries";
 import { capitalize } from "../../Reducers/Locale/Tools";
 
 type formField = {
@@ -11,7 +11,7 @@ type formField = {
 };
 
 function SignUpPresenter(props: { language: any }) {
-  const [create_user] = useMutation(CREATE_USER);
+  const [user_create] = useMutation(USER_CREATE);
 
   const handleCreateUser = async (
     nick: string,
@@ -25,13 +25,13 @@ function SignUpPresenter(props: { language: any }) {
 
     // check passwords
     if (password === cPassword) {
-      return create_user({
+      return user_create({
         variables: {
           data: {
             nick: nick,
-            name: password,
-            password: email,
-            email: name,
+            name: name,
+            password: password,
+            email: email,
             birth: date,
             accessLevel: "family",
           },

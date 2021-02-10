@@ -85,11 +85,21 @@ function SignUp(props?: {}) {
       )
         .then((data) => {
           setLoading(false);
-          console.log("handleCreateUser data", data);
+
+          setNick({ value: "", errmsg: "" });
+          setPassword({ value: "", errmsg: "" });
+          setCpassword({ value: "", errmsg: "" });
+          setEmail({ value: "", errmsg: "" });
+          setName({ value: "", error: false, errmsg: "" });
+          setSelectedDate({
+            value: new Date("99/99/99"),
+            error: false,
+            errmsg: "",
+          });
         })
         .catch((err) => {
           setLoading(false);
-          console.log("handleCreateUser err", err);
+          console.error("handleCreateUser err", err);
         });
     }
   };
