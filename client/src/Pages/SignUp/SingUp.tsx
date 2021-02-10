@@ -70,6 +70,7 @@ function SignUp(props?: {}) {
       selectedDate,
       setSelectedDate,
     });
+
     console.log("allvalid", allvalid);
     if (allvalid) {
       handleCreateUser(
@@ -79,7 +80,13 @@ function SignUp(props?: {}) {
         email.value,
         name.value,
         selectedDate.value
-      );
+      )
+        .then((data) => {
+          console.log("handleCreateUser data", data);
+        })
+        .catch((err) => {
+          console.log("handleCreateUser err", err);
+        });
     }
   };
 
@@ -188,12 +195,22 @@ function SignUp(props?: {}) {
               error={!!name.errmsg}
               helperText={name.errmsg}
             />
+            {/* <TextField
+              id="userbirth"
+              label="Next appointment"
+              type="date"
+              // defaultValue="2017-05-24T10:30"
+              // className={classes.textField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            /> */}
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardDatePicker
-                disableToolbar
                 variant="inline"
                 format="dd/MM/yyyy"
                 margin="normal"
+                views={["year", "month", "date"]}
                 id="userbirth"
                 label={language.msgs.birth_date}
                 value={selectedDate.value}

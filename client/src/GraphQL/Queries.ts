@@ -12,27 +12,12 @@ export const CHECK_USER = gql`
 `;
 
 export const CREATE_USER = gql`
-  mutation createUser(
-    $nick: String!
-    $name: String!
-    $password: String!
-    $email: String!
-    $birth: String!
-    $accessLevel: Date
-    $active: Boolean
-  ) {
-    createUser(
-      nick: $nick
-      name: $name
-      password: $password
-      email: $email
-      birth: $birth
-      accessLevel: $accessLevel
-      active: $active
-    ) {
+  mutation createUser($data: UserInput!) {
+    createUser(data: $data) {
+      # _id
       nick
       name
-      password
+      # password
       email
       birth
       accessLevel

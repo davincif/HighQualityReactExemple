@@ -1,8 +1,8 @@
 // Third party libs
-import { useLazyQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 
 // Internal imports
-import { CHECK_USER } from "../../GraphQL/Queries";
+import { CREATE_USER } from "../../GraphQL/Queries";
 import { capitalize } from "../../Reducers/Locale/Tools";
 
 type formField = {
@@ -11,7 +11,7 @@ type formField = {
 };
 
 function SignUpPresenter(props: { language: any }) {
-  const [check_user] = useLazyQuery(CHECK_USER);
+  const [create_user] = useMutation(CREATE_USER);
 
   const handleCreateUser = async (
     nick: string,
@@ -21,15 +21,23 @@ function SignUpPresenter(props: { language: any }) {
     name: string,
     selectedDate: Date
   ) => {
-    console.log("nick", nick);
-    console.log("password", password);
-    console.log("cPassword", cPassword);
-    console.log("email", email);
-    console.log("name", name);
-    console.log("selectedDate", selectedDate);
+    let date = `${selectedDate.getDate()}/${selectedDate.getMonth()}/${selectedDate.getFullYear()}`;
+
     // check passwords
-    if (password !== cPassword) {
-      return "Passwords don't match";
+    if (password === cPassword) {
+      console.log("create_user");
+      return create_user({
+        variables: {
+          data: {
+            nick: nick,
+            name: password,
+            password: email,
+            email: name,
+            birth: date,
+            accessLevel: "family",
+          },
+        },
+      });
     }
   };
 
@@ -273,10 +281,12 @@ function SignUpPresenter(props: { language: any }) {
     // trim all entries
     let idx = 0;
     let tolist = Object.keys(fields);
-    console.log("tolist", tolist);
     while (idx < tolist.length) {
       let str: string = tolist[idx];
-      if ((fields as any)[str].value) {
+      if (
+        (fields as any)[str].value &&
+        typeof (fields as any)[str].value === "string"
+      ) {
         let trimed = (fields as any)[str].value.trim();
         if (trimed !== (fields as any)[str].value) {
           (fields as any)[tolist[idx + 1]]({
@@ -290,9 +300,7 @@ function SignUpPresenter(props: { language: any }) {
     }
 
     // check all validations
-    return !!valfuncs
-      .map((fun) => fun(fields))
-      .find((val: any) => val === false);
+    return valfuncs.map((fun) => fun(fields)).every((val: any) => val === true);
   };
 
   return {
