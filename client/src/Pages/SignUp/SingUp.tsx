@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react";
 import {
   Avatar,
   Button,
+  CircularProgress,
   Container,
   CssBaseline,
   TextField,
@@ -35,6 +36,7 @@ function SignUp(props?: {}) {
     error: false,
     errmsg: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const {
     handleCreateUser,
@@ -71,8 +73,8 @@ function SignUp(props?: {}) {
       setSelectedDate,
     });
 
-    console.log("allvalid", allvalid);
     if (allvalid) {
+      setLoading(true);
       handleCreateUser(
         nick.value,
         password.value,
@@ -82,9 +84,11 @@ function SignUp(props?: {}) {
         selectedDate.value
       )
         .then((data) => {
+          setLoading(false);
           console.log("handleCreateUser data", data);
         })
         .catch((err) => {
+          setLoading(false);
           console.log("handleCreateUser err", err);
         });
     }
@@ -119,6 +123,7 @@ function SignUp(props?: {}) {
               onBlur={() => {
                 nickValidation({ nick, setNick });
               }}
+              disabled={loading}
             />
             <TextField
               variant="outlined"
@@ -138,6 +143,7 @@ function SignUp(props?: {}) {
               }}
               error={!!password.errmsg}
               helperText={password.errmsg}
+              disabled={loading}
             />
             <TextField
               variant="outlined"
@@ -161,6 +167,7 @@ function SignUp(props?: {}) {
               }}
               error={!!cPassword.errmsg}
               helperText={cPassword.errmsg}
+              disabled={loading}
             />
             <TextField
               variant="outlined"
@@ -178,6 +185,7 @@ function SignUp(props?: {}) {
               }}
               error={!!email.errmsg}
               helperText={email.errmsg}
+              disabled={loading}
             />
             <TextField
               variant="outlined"
@@ -194,6 +202,7 @@ function SignUp(props?: {}) {
               }}
               error={!!name.errmsg}
               helperText={name.errmsg}
+              disabled={loading}
             />
             {/* <TextField
               id="userbirth"
@@ -223,6 +232,7 @@ function SignUp(props?: {}) {
                 }}
                 error={!!selectedDate.errmsg}
                 helperText={selectedDate.errmsg}
+                disabled={loading}
               />
             </MuiPickersUtilsProvider>
             <Button
@@ -232,8 +242,13 @@ function SignUp(props?: {}) {
               color="primary"
               className={classes.submit}
               onClick={HandleConfirm}
+              disabled={loading}
             >
-              {capitalizeInitials(language.msgs.confirm)}
+              {loading ? (
+                <CircularProgress />
+              ) : (
+                <div>{capitalizeInitials(language.msgs.confirm)}</div>
+              )}
             </Button>
           </form>
         </div>

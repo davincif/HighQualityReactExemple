@@ -11,7 +11,6 @@ const UserSchema = new Schema({
   name: {
     type: String,
     required: [true, "Field name is required"],
-    unique: true,
   },
   password: {
     type: String,
@@ -20,6 +19,7 @@ const UserSchema = new Schema({
   email: {
     type: String,
     required: [true, "Field email is required"],
+    unique: true,
   },
   birth: {
     type: String,

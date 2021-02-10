@@ -25,7 +25,6 @@ function SignUpPresenter(props: { language: any }) {
 
     // check passwords
     if (password === cPassword) {
-      console.log("create_user");
       return create_user({
         variables: {
           data: {
