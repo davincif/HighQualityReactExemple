@@ -13,12 +13,15 @@ const secret = "fbslat";
 export default {
   Date: dateScalar,
   Query: {
-    login: async (_: any, { nick, password }: any) =>
-      !!(await checkPassword({
+    login: async (_: any, { nick, password }: any) => {
+      let allowed = !!(await checkPassword({
         secret: secret,
         password: password,
         userToCheck: { nick },
-      })),
+      }));
+
+      return { allowed };
+    },
     users: () => getAllUsers(),
     user: (_: any, { nick }: any) => findUser({ nick }),
     // user: (_: any, { id }: any) => User.findById(id),

@@ -31,3 +31,4 @@ yarn-error.log*
 /server/trash
 **/dist/
 client/coverage/
+**/.vscode/
