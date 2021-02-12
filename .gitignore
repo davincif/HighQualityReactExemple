@@ -27,8 +27,15 @@ yarn-error.log*
 **/node_modules/
 *.eslintcache*
 /trash
-/client/trash
-/server/trash
 **/dist/
-client/coverage/
 **/.vscode/
+
+# server
+/server/trash
+/server/trash
+
+# client
+/client/trash
+client/coverage/
+/client/trash
+/client/.env.dev

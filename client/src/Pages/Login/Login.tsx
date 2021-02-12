@@ -54,9 +54,8 @@ function Login(props?: {}) {
 
     if (error) {
       // code
-      console.log("error", error);
+      console.error("error", error);
     } else if (data) {
-      console.log("data", data);
       if (data.login.allowed) {
         console.log("ready to login");
       }

@@ -1,13 +1,20 @@
-// https://www.apollographql.com/docs/apollo-server/api/graphql-tools/
+// Standard Libs
+import * as path from "path";
+
+// Third Party Imports
 import mongoose from "mongoose";
 import { ApolloServer } from "apollo-server";
+import * as dotenv from "dotenv";
 
-const APOLLO_PORT = 4000;
-const MONGO_USER = "fbroot";
-const MONGO_PASS = "fbmongopass";
-const MONGO_HOST = "localhost";
-const MONGO_PORT = "27017";
-const MONGO_DATABASE = "familly_bugget";
+// loading environment variables
+dotenv.config({ path: path.join(__dirname, ".env.dev") });
+
+const APOLLO_PORT = process.env.APOLLO_PORT;
+const MONGO_USER = process.env.MONGO_USER;
+const MONGO_PASS = process.env.MONGO_PASS;
+const MONGO_HOST = process.env.MONGO_HOST;
+const MONGO_PORT = process.env.MONGO_PORT;
+// const MONGO_DATABASE = "familly_bugget";
 
 const startServer = ({ typeDefs, resolvers }: any) => {
   // Mongo DB Connetion Establishment
@@ -24,7 +31,18 @@ const startServer = ({ typeDefs, resolvers }: any) => {
   });
 
   // Opening Listener to Apollo Server
-  const server = new ApolloServer({ typeDefs, resolvers });
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: ({ req, res }) => {
+      // { req, res, connection }
+      // console.log("req.headers.authorization", req.headers.authorization);
+      // console.log("res.cookie", res.cookie);
+
+      return { res };
+      // return { cookie: () => {} };
+    },
+  });
   server
     .listen({ port: APOLLO_PORT })
     .then(({ url }) => {
