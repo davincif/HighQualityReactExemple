@@ -1,5 +1,5 @@
 // Third party libs
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   AppBar,
   IconButton,
@@ -17,11 +17,18 @@ import USFlag from "../Icons/USFlag";
 import BrazilianFlag from "../Icons/BrazilianFlag";
 import SpanishFlag from "../Icons/SpanishFlag";
 import RussianFlag from "../Icons/RussianFlag";
+import { get_browser_lang } from "../../Reducers/Locale/Tools";
 
 function Navbar(props?: {}) {
   const { language, dispatch } = useContext(LocaleContext);
   const [langIconAnchorEl, setLangIconAnchorEl] = React.useState(null);
   const classes = useStyles();
+
+  useEffect(() => {
+    // setting prefered language
+    let lang = localStorage.getItem("lang");
+    dispatch({ type: lang ? lang : get_browser_lang() });
+  }, []);
 
   let openLoginIcon = Boolean(langIconAnchorEl);
 

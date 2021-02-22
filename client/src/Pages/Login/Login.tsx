@@ -31,7 +31,7 @@ function Copyright() {
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
       <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+        davincif
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -108,11 +108,11 @@ function Login(props?: {}) {
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
             />
-            <FormControlLabel
+            {/* <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label={capitalize(language.msgs.remember_me)}
               disabled={loading}
-            />
+            /> */}
             <Button
               // type="submit"
               fullWidth

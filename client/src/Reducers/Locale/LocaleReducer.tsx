@@ -13,38 +13,51 @@ export const initialState = {
 };
 
 export const LocaleReducer = (state: any, action: any) => {
-  switch (action.type) {
+  let lang = action.type?.toLowerCase();
+  let newState;
+
+  // change state
+  switch (lang) {
     case "en":
-      return initialState;
+      newState = initialState;
+      break;
 
     case "pt-br":
-      return {
+      newState = {
         ...initialState,
         code: "pt-br",
         lang: "Portuguese",
         name: "Português",
         msgs: fallbackBuilder(ptbrMessages, enMessages),
       };
+      break;
 
     case "ru":
-      return {
+      newState = {
         ...initialState,
         code: "ru",
         lang: "Russian",
         name: "Русский",
         msgs: fallbackBuilder(ruMessages, enMessages),
       };
+      break;
 
     case "es":
-      return {
+      newState = {
         ...initialState,
         code: "es",
         lang: "Espanish",
         name: "Español",
         msgs: fallbackBuilder(esMessages, enMessages),
       };
+      break;
 
     default:
-      return initialState;
+      newState = initialState;
   }
+
+  // save state to storage
+  localStorage.setItem("lang", newState.code);
+
+  return newState;
 };
