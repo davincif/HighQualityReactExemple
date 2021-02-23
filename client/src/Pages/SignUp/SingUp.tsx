@@ -106,7 +106,7 @@ function SignUp(props?: {}) {
 
   return (
     <div>
-      <Navbar></Navbar>
+      <Navbar />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>

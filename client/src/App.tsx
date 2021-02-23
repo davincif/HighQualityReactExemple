@@ -5,10 +5,11 @@ import { ApolloProvider, from, HttpLink } from "@apollo/client";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 
-// Components
+// Pages
 import Login from "./Pages/Login/Login";
 import NotFound from "./Pages/NotFound/NotFound";
 import SignUp from "./Pages/SignUp/SingUp";
+import Family from "./Pages/Family/Family";
 
 // Internal imports
 import "./App.scss";
@@ -38,6 +39,7 @@ function App() {
         <Switch>
           <Route exact path="/" component={Login}></Route>
           <Route exact path="/signup" component={SignUp}></Route>
+          <Route exact path="/family" component={Family}></Route>
           <Route component={NotFound} />
         </Switch>
       </Router>

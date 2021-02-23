@@ -4,6 +4,8 @@ import { esMessages } from "./Lang/Spanish";
 import { ruMessages } from "./Lang/Russian";
 import { fallbackBuilder } from "./Tools";
 
+const standardFallback = enMessages;
+
 export const initialState = {
   code: "en",
   lang: "English",
@@ -28,7 +30,7 @@ export const LocaleReducer = (state: any, action: any) => {
         code: "pt-br",
         lang: "Portuguese",
         name: "Português",
-        msgs: fallbackBuilder(ptbrMessages, enMessages),
+        msgs: fallbackBuilder(ptbrMessages, standardFallback),
       };
       break;
 
@@ -38,7 +40,7 @@ export const LocaleReducer = (state: any, action: any) => {
         code: "ru",
         lang: "Russian",
         name: "Русский",
-        msgs: fallbackBuilder(ruMessages, enMessages),
+        msgs: fallbackBuilder(ruMessages, standardFallback),
       };
       break;
 
@@ -48,7 +50,7 @@ export const LocaleReducer = (state: any, action: any) => {
         code: "es",
         lang: "Espanish",
         name: "Español",
-        msgs: fallbackBuilder(esMessages, enMessages),
+        msgs: fallbackBuilder(esMessages, standardFallback),
       };
       break;
 

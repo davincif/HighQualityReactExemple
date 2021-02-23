@@ -18,4 +18,7 @@ export const enMessages = {
   email_sounds_incorrect: "this email sounds incorrect",
   empyt_field: "this field cannot be left empty",
   invalid_input: "invalid input",
+  add_family_member: "add a new family member",
+  add: "add",
+  cancel: "cancel",
 };

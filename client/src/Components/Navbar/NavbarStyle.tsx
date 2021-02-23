@@ -2,6 +2,9 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 export const useStyles = makeStyles((theme) => ({
+  nav: {
+    backgroundColor: theme.palette.primary.dark,
+  },
   root: {
     flexGrow: 1,
   },

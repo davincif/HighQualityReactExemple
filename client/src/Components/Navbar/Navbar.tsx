@@ -47,7 +47,7 @@ function Navbar(props?: {}) {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="static" className={classes.nav}>
         <Toolbar variant="dense">
           <IconButton
             edge="start"
