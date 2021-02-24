@@ -18,4 +18,9 @@ export const esMessages = {
   email_sounds_incorrect: "este email no parece correcto",
   empyt_field: "este campo no puede estar vacío",
   invalid_input: "entrada inválida",
+  add_family_member: "añadir nuevo miembro de la família.",
+  add: "añadir",
+  cancel: "cancelar",
+  folders: "carpetas",
+  files: "archivos",
 };

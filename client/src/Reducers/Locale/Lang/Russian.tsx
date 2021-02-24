@@ -18,4 +18,9 @@ export const ruMessages = {
   email_sounds_incorrect: "неверный адрес электронной почты",
   empyt_field: "необходимо заполнить это поле",
   invalid_input: "неверные данные",
+  add_family_member: "добавить члена семьи",
+  add: "добавить",
+  cancel: "отменить",
+  folders: "папки",
+  files: "файлы",
 };

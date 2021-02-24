@@ -1,6 +1,6 @@
 // Material
 import { createMuiTheme } from "@material-ui/core/styles";
-import { grey, purple } from "@material-ui/core/colors";
+import { grey } from "@material-ui/core/colors";
 
 export const initialState = createMuiTheme({
   palette: {
@@ -8,7 +8,7 @@ export const initialState = createMuiTheme({
     background: {
       // 01151A
       default: "#01151A",
-      paper: "pink",
+      paper: "#022933",
     },
     text: {
       primary: "#ffffff",

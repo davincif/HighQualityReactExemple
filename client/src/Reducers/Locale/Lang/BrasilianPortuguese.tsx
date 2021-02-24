@@ -18,4 +18,9 @@ export const ptbrMessages = {
   email_sounds_incorrect: "este email não parece correto",
   empyt_field: "este campo não ser estar vazio",
   invalid_input: "entrada invalida",
+  add_family_member: "adicionar novo membro da família",
+  add: "adicionar",
+  cancel: "cancelar",
+  folders: "pastas",
+  files: "arquivos",
 };
