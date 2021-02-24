@@ -10,6 +10,7 @@ import Login from "./Pages/Login/Login";
 import NotFound from "./Pages/NotFound/NotFound";
 import SignUp from "./Pages/SignUp/SingUp";
 import Family from "./Pages/Family/Family";
+import UserHome from "./Pages/Content/UserHome";
 
 // Internal imports
 import "./App.scss";
@@ -37,9 +38,10 @@ function App() {
     <ApolloProvider client={client}>
       <Router>
         <Switch>
-          <Route exact path="/" component={Login}></Route>
-          <Route exact path="/signup" component={SignUp}></Route>
-          <Route exact path="/family" component={Family}></Route>
+          <Route exact path="/" component={Login} />
+          <Route exact path="/signup" component={SignUp} />
+          <Route exact path="/family" component={Family} />
+          <Route exact path="/userhome" component={UserHome} />
           <Route component={NotFound} />
         </Switch>
       </Router>

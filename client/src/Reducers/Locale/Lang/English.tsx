@@ -21,4 +21,6 @@ export const enMessages = {
   add_family_member: "add a new family member",
   add: "add",
   cancel: "cancel",
+  folders: "folders",
+  file: "files",
 };
