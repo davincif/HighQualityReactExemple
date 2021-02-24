@@ -22,5 +22,5 @@ export const enMessages = {
   add: "add",
   cancel: "cancel",
   folders: "folders",
-  file: "files",
+  files: "files",
 };

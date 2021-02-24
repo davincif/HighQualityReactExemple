@@ -10,7 +10,7 @@ import Login from "./Pages/Login/Login";
 import NotFound from "./Pages/NotFound/NotFound";
 import SignUp from "./Pages/SignUp/SingUp";
 import Family from "./Pages/Family/Family";
-import UserHome from "./Pages/Content/UserHome";
+import UserHome from "./Pages/UserHome/UserHome";
 
 // Internal imports
 import "./App.scss";

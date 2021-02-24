@@ -14,7 +14,7 @@ import Link from "@material-ui/core/Link";
 // Internal imports
 import { useStyles } from "./UserHomeStyle";
 import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
-import { capitalize, capitalizeInitials } from "../../Reducers/Locale/Tools";
+import { capitalize } from "../../Reducers/Locale/Tools";
 import Navbar from "../../Components/Navbar/Navbar";
 
 function UserHome(props?: {}) {
@@ -54,7 +54,7 @@ function UserHome(props?: {}) {
         </Link>
       </Breadcrumbs>
 
-      <Container className={classes.mainContainer}>
+      <div className={classes.mainContainer}>
         <Typography variant="h5" color="textPrimary">
           {capitalize(language.msgs.folders)}
         </Typography>
@@ -72,7 +72,7 @@ function UserHome(props?: {}) {
           <DescriptionRoundedIcon className={classes.icon} />
           <DescriptionRoundedIcon className={classes.icon} />
         </div>
-      </Container>
+      </div>
     </div>
   );
 }
