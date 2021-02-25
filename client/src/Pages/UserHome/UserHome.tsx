@@ -1,5 +1,5 @@
 // Third party libs
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   Breadcrumbs,
   CssBaseline,
@@ -10,6 +10,7 @@ import Link from "@material-ui/core/Link";
 
 // Internal imports
 import { useStyles } from "./UserHomeStyle";
+import { FileTree } from "./UserHomeModel";
 import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
 import { capitalize } from "../../Reducers/Locale/Tools";
 import Navbar from "../../Components/Navbar/Navbar";
@@ -18,6 +19,30 @@ import Item from "../../Components/Item/Item";
 function UserHome(props?: {}) {
   const classes = useStyles();
   const { language } = useContext(LocaleContext);
+  const mockFileTree: FileTree = {
+    Xablau: {
+      name: "Xablau",
+      insideFiles: {},
+    },
+    Curió: {
+      name: "Curió",
+      insideFiles: {},
+    },
+    Наталья: {
+      name: "Наталья",
+      insideFiles: {},
+    },
+    "Jerenilson Bezerra da Silva": {
+      name: "Jerenilson Bezerra da Silva",
+    },
+    Canaã: {
+      name: "Canaã",
+    },
+    Галина: {
+      name: "Галина",
+    },
+  };
+  const [fileTree, setFileTree] = useState(mockFileTree);
 
   return (
     <div>
@@ -56,9 +81,18 @@ function UserHome(props?: {}) {
         <Typography variant="h5" color="textPrimary">
           {capitalize(language.msgs.folders)}
         </Typography>
+        {/* rendering folders */}
         <div className={classes.flexcont}>
-          <Item itemType="item" droppableItemType="item" folder />
-          <Item itemType="item" droppableItemType="item" folder />
+          {Object.values(mockFileTree)
+            .filter((value) => value.insideFiles === undefined)
+            .map((value) => (
+              <Item
+                name={value.name}
+                itemType="item"
+                droppableItemType="item"
+                folder
+              />
+            ))}
         </div>
 
         <Divider variant="middle" className={classes.divider} />
@@ -67,8 +101,12 @@ function UserHome(props?: {}) {
           {capitalize(language.msgs.files)}
         </Typography>
         <div className={classes.flexcont}>
-          <Item itemType="item" />
-          <Item itemType="item" />
+          {/* rendering files */}
+          {Object.values(mockFileTree)
+            .filter((value) => value.insideFiles !== undefined)
+            .map((value) => (
+              <Item name={value.name} itemType="item" />
+            ))}
         </div>
       </div>
     </div>
