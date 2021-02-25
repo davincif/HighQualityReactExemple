@@ -129,45 +129,20 @@ function UserHome(props?: {}) {
             fileList
           );
         } else {
-          let step = justSelectedIndex < lastSelectedIndex ? 1 : -1;
-          for (
-            let pos = justSelectedIndex;
-            pos != lastSelectedIndex;
-            pos = pos + step
-          ) {
-            newSelected[fileList[pos]] = true;
-          }
+          // code
         }
+        // for (let sel in selectedFiles) {
+        //   newSelected[sel] = sel === thisItem.name ? isSelected : false;
+        // }
 
         setSelectedFiles(newSelected);
       } else {
         // for folders
         newSelected = { ...selectedFolders };
 
-        let folderList = Object.keys(selectedFolders);
-        let lastSelectedIndex = folderList.indexOf(lastClickedFolder);
-        let justSelectedIndex = folderList.indexOf(thisItem.name);
-
-        if (lastSelectedIndex === -1) {
-          newSelected[thisItem.name] = !newSelected[thisItem.name];
-          setLastClickedFolder(thisItem.name);
-        } else if (justSelectedIndex === -1) {
-          // some serious bug ocurred
-          console.error(
-            "some serious bug ocurred justSelectedIndex === -1",
-            thisItem.name,
-            folderList
-          );
-        } else {
-          let step = justSelectedIndex < lastSelectedIndex ? 1 : -1;
-          for (
-            let pos = justSelectedIndex;
-            pos != lastSelectedIndex;
-            pos = pos + step
-          ) {
-            newSelected[folderList[pos]] = true;
-          }
-        }
+        // for (let sel in selectedFiles) {
+        //   newSelected[sel] = sel === thisItem.name ? isSelected : false;
+        // }
 
         setSelectedFolders(newSelected);
       }

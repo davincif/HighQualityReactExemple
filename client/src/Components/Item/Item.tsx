@@ -20,6 +20,10 @@ type ItemProps = {
   cutterIndicator?: string;
   itemInfo?: any;
   droppedIn?: (item: DragObjectWithType, monitor: DropTargetMonitor) => any;
+  selected?: boolean;
+  onClick?: (selected: boolean, shiftKey: boolean, ctrlKey: boolean) => any;
+  onDoubleClick?: () => any;
+  stopPropagation?: boolean;
 };
 
 function Item({
@@ -32,6 +36,10 @@ function Item({
   cutterIndicator = "...",
   itemInfo = undefined,
   droppedIn = () => {},
+  selected = false,
+  onClick = (selected: boolean, shiftKey: boolean, ctrlKey: boolean) => {},
+  onDoubleClick = () => {},
+  stopPropagation = false,
 }: ItemProps) {
   // check params consistency
   if (maxLabelLen <= cutterIndicator.length) {
@@ -73,7 +81,22 @@ function Item({
   return (
     <div
       ref={!droppableItemType ? null : drop}
-      className={`${classes.dropWrapper} ${isOver ? classes.isOver : ""}`}
+      className={`${classes.dropWrapper} ${
+        isOver || selected ? classes.isOver : ""
+      }`}
+      onClick={(event) => {
+        if (stopPropagation) {
+          event.stopPropagation();
+        }
+        onClick(!selected, event.shiftKey, event.ctrlKey);
+      }}
+      onDoubleClick={(event) => {
+        if (stopPropagation) {
+          event.stopPropagation();
+        }
+        console.log("double clicked");
+        onDoubleClick();
+      }}
     >
       <CssBaseline />
       <div ref={drag} className={classes.itemdiv}>
