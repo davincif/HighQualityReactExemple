@@ -3,7 +3,8 @@ import React from "react";
 import { Chip, CssBaseline, Tooltip } from "@material-ui/core";
 import FolderRoundedIcon from "@material-ui/icons/FolderRounded";
 import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
-import { useDrag, useDrop } from "react-dnd";
+import { DropTargetMonitor, useDrag, useDrop } from "react-dnd";
+import { DragObjectWithType } from "react-dnd/dist/types/hooks/types";
 
 // Internal imports
 import { useStyles } from "./ItemStyle";
@@ -17,16 +18,20 @@ type ItemProps = {
   droppableItemType?: string;
   maxLabelLen?: number;
   cutterIndicator?: string;
+  itemInfo?: any;
+  droppedIn?: (item: DragObjectWithType, monitor: DropTargetMonitor) => any;
 };
 
 function Item({
   name = "",
   itemType = "asdasd",
   folder = false,
-  dragOpacity = 0.5,
-  droppableItemType = "@useless@",
+  dragOpacity = 0.25,
+  droppableItemType = "@notDroppable@",
   maxLabelLen = 11,
   cutterIndicator = "...",
+  itemInfo = undefined,
+  droppedIn = () => {},
 }: ItemProps) {
   // check params consistency
   if (maxLabelLen <= cutterIndicator.length) {
@@ -40,7 +45,7 @@ function Item({
 
   // react-dnd States
   const [{ isDragging }, drag] = useDrag({
-    item: { type: itemType },
+    item: { type: itemType, name: name, info: itemInfo },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -48,8 +53,7 @@ function Item({
   const [{ isOver }, drop] = useDrop({
     accept: !droppableItemType ? itemType : droppableItemType,
     drop: (item, monitor) => {
-      console.log("item", item);
-      console.log("monitor", monitor);
+      droppedIn(item, monitor);
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),

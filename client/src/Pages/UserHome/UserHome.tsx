@@ -83,14 +83,37 @@ function UserHome(props?: {}) {
         </Typography>
         {/* rendering folders */}
         <div className={classes.flexcont}>
-          {Object.values(mockFileTree)
-            .filter((value) => value.insideFiles === undefined)
+          {Object.values(fileTree)
+            .filter((value) => value.insideFiles !== undefined)
             .map((value) => (
               <Item
+                folder
                 name={value.name}
                 itemType="item"
                 droppableItemType="item"
-                folder
+                droppedIn={(item, monitor) => {
+                  // put droped item inside this folder
+                  let toBeMovied: string = (item as any).name;
+                  let newfileTree: FileTree = { ...fileTree };
+
+                  if (toBeMovied === value.name) {
+                    // you cant insert a file in itself
+                    return;
+                  } else if (newfileTree[value.name].insideFiles) {
+                    (newfileTree[value.name].insideFiles as FileTree)[
+                      toBeMovied
+                    ] = newfileTree[toBeMovied];
+
+                    delete newfileTree[toBeMovied];
+                    setFileTree(newfileTree);
+                  } else {
+                    // the folder where the file should be inserted is not a folder!
+                    console.error(
+                      `folder ${value.name} does not has a files object inside it, something is wrong. Operation cancelled`
+                    );
+                    return;
+                  }
+                }}
               />
             ))}
         </div>
@@ -102,8 +125,8 @@ function UserHome(props?: {}) {
         </Typography>
         <div className={classes.flexcont}>
           {/* rendering files */}
-          {Object.values(mockFileTree)
-            .filter((value) => value.insideFiles !== undefined)
+          {Object.values(fileTree)
+            .filter((value) => value.insideFiles === undefined)
             .map((value) => (
               <Item name={value.name} itemType="item" />
             ))}
