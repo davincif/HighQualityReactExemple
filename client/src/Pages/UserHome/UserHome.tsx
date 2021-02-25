@@ -269,11 +269,34 @@ function UserHome(props?: {}) {
                     // you cant insert a file in itself
                     return;
                   } else if (newfileTree[value.name].insideFiles) {
-                    (newfileTree[value.name].insideFiles as FileTree)[
-                      toBeMovied
-                    ] = newfileTree[toBeMovied];
+                    // gather all selected items
+                    let selected = Object.keys(selectedFiles)
+                      .filter(
+                        (selValue) =>
+                          // get all selected but the current file
+                          selectedFiles[selValue] && selValue !== value.name
+                      )
+                      .concat(
+                        Object.keys(selectedFolders).filter(
+                          (selValue) =>
+                            // get all selected but the current folder
+                            selectedFolders[selValue] && selValue !== value.name
+                        )
+                      );
 
-                    delete newfileTree[toBeMovied];
+                    // add the current selected item to the list if not present
+                    if (selected.indexOf(toBeMovied) === -1) {
+                      selected.push(toBeMovied);
+                    }
+                    console.log("selected", selected);
+
+                    // inset the items in the current folder
+                    for (let item of selected) {
+                      (newfileTree[value.name].insideFiles as FileTree)[item] =
+                        newfileTree[item];
+                      delete newfileTree[item];
+                    }
+
                     setFileTree(newfileTree);
                   } else {
                     // the folder where the file should be inserted is not a folder!

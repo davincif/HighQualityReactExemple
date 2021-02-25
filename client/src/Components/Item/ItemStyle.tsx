@@ -14,7 +14,8 @@ export const useStyles = makeStyles((theme) => ({
     fontSize: "100px",
   },
   dropWrapper: {
-    margin: theme.spacing(0.8, 1.2),
+    margin: theme.spacing(0.4, 0.8),
+    padding: theme.spacing(0.4, 0.8),
     borderRadius: theme.spacing(1),
   },
   isOver: {
