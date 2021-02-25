@@ -2,13 +2,10 @@
 import React, { useContext } from "react";
 import {
   Breadcrumbs,
-  Container,
   CssBaseline,
   Divider,
   Typography,
 } from "@material-ui/core";
-import FolderRoundedIcon from "@material-ui/icons/FolderRounded";
-import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
 import Link from "@material-ui/core/Link";
 
 // Internal imports
@@ -16,6 +13,7 @@ import { useStyles } from "./UserHomeStyle";
 import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
 import { capitalize } from "../../Reducers/Locale/Tools";
 import Navbar from "../../Components/Navbar/Navbar";
+import Item from "../../Components/Item/Item";
 
 function UserHome(props?: {}) {
   const classes = useStyles();
@@ -59,8 +57,8 @@ function UserHome(props?: {}) {
           {capitalize(language.msgs.folders)}
         </Typography>
         <div className={classes.flexcont}>
-          <FolderRoundedIcon className={classes.icon} />
-          <FolderRoundedIcon className={classes.icon} />
+          <Item itemType="item" droppableItemType="item" folder />
+          <Item itemType="item" droppableItemType="item" folder />
         </div>
 
         <Divider variant="middle" className={classes.divider} />
@@ -69,8 +67,8 @@ function UserHome(props?: {}) {
           {capitalize(language.msgs.files)}
         </Typography>
         <div className={classes.flexcont}>
-          <DescriptionRoundedIcon className={classes.icon} />
-          <DescriptionRoundedIcon className={classes.icon} />
+          <Item itemType="item" />
+          <Item itemType="item" />
         </div>
       </div>
     </div>

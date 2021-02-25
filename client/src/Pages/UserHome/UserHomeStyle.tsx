@@ -12,11 +12,7 @@ export const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     flexFlow: "row wrap",
     height: "auto",
-  },
-  icon: {
-    color: theme.palette.primary.main,
-    fontSize: "100px",
-    margin: "5px 10px",
+    borderRadius: theme.spacing(1),
   },
   breadcrumbs: {
     margin: "8px",

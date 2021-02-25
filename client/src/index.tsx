@@ -1,6 +1,10 @@
 // Third party libs
 import React from "react";
 import ReactDOM from "react-dom";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { TouchBackend } from "react-dnd-touch-backend";
+import { BrowserView, MobileView } from "react-device-detect";
 
 // Internal imports
 import "./index.scss";
@@ -13,7 +17,16 @@ ReactDOM.render(
   <React.StrictMode>
     <ThemeContextProdiver>
       <LocaleContextProdiver>
-        <App />
+        <BrowserView>
+          <DndProvider backend={HTML5Backend}>
+            <App />
+          </DndProvider>
+        </BrowserView>
+        <MobileView>
+          <DndProvider backend={TouchBackend}>
+            <App />
+          </DndProvider>
+        </MobileView>
       </LocaleContextProdiver>
     </ThemeContextProdiver>
   </React.StrictMode>,
