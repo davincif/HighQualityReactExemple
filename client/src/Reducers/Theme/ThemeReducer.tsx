@@ -1,6 +1,6 @@
 // Material
 import { createMuiTheme } from "@material-ui/core/styles";
-import { grey, purple } from "@material-ui/core/colors";
+import { grey } from "@material-ui/core/colors";
 
 export const initialState = createMuiTheme({
   palette: {

@@ -24,6 +24,7 @@ type ItemProps = {
   onClick?: (selected: boolean, shiftKey: boolean, ctrlKey: boolean) => any;
   onDoubleClick?: () => any;
   stopPropagation?: boolean;
+  className?: string;
 };
 
 function Item({
@@ -40,6 +41,7 @@ function Item({
   onClick = (selected: boolean, shiftKey: boolean, ctrlKey: boolean) => {},
   onDoubleClick = () => {},
   stopPropagation = false,
+  className = "",
 }: ItemProps) {
   // check params consistency
   if (maxLabelLen <= cutterIndicator.length) {
@@ -81,7 +83,7 @@ function Item({
   return (
     <div
       ref={!droppableItemType ? null : drop}
-      className={`${classes.dropWrapper} ${
+      className={`${className} ${classes.dropWrapper} ${
         isOver || selected ? classes.isOver : ""
       }`}
       onClick={(event) => {
