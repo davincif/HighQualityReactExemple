@@ -5,7 +5,7 @@ export const useStyles = makeStyles((theme) => ({
     // marginTop: theme.spacing(2),
     margin: theme.spacing(2),
     padding: theme.spacing(0, 1),
-    textAlign: "center",
+    // textAlign: "center",
   },
   flexcont: {
     display: "flex",
@@ -13,9 +13,10 @@ export const useStyles = makeStyles((theme) => ({
     flexFlow: "row wrap",
     height: "auto",
     borderRadius: theme.spacing(1),
+    textAlign: "center",
   },
   breadcrumbs: {
-    margin: "8px",
+    marginBottom: theme.spacing(2),
   },
   divider: {
     margin: theme.spacing(3, "auto"),

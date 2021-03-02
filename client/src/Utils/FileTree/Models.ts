@@ -17,42 +17,46 @@ export interface FileTreeInterface {
    * @param userTree The user tree to be transformed into a FileTree.
    * @param adapter A function to be applyed on every user object in order to transfor it in a leaf.
    */
-  loadTree(
-    userTree: Object,
-    adapter?: (userTree: Object) => DirType | FileType
-  ): void;
+  loadTree(userTree: Object, adapter?: (userTree: Object) => FSItem): void;
 
   /**
-   * @returns a copy of the current fileTree
+   * Get the Entire file tree
+   * @returns a copy of the current file tree
    */
   getTree(): DirType;
 
   /**
-   * get a item (directory or file) in the current dir.
-   * @param name Dir or file name to be searched.
-   * @returns The requested item or undefined if not found.
+   * Get the curret browser position file subtree
    */
-  getItem(name: string): DirType | FileType | undefined;
+  getCurrentTree(): DirType;
+
+  /**
+   * Get a item (directory or file) in the current dir.
+   * @param name Dir or file name to be searched.
+   * @returns The requested item and it's index or empty list if not found.
+   */
+  getItem(name: string): [FSItem, number] | [];
 
   /**
    * Add a new file or directory to the current browser position.
    * @param item The file or directory to be added.
    */
-  addItem(item: DirType | FileType): void;
+  addItem(item: FSItem): void;
 
   /**
    * Remove a file or directory from the current browser position.
-   * @param item The file or directory (or its position in the parent list) to be removed.
+   * @param item The file's or directory's position in the parent list to be removed.
    * @returns The data removed from the tree.
    */
-  rmItem(item: DirType | FileType | number): DirType | FileType;
+  rmItem(item: number): FSItem;
 
   /**
    * Move files from the currect browser position directory to another dir accessible in the same level of the browser.
-   * @param items The files or directories (or theirs position in the parent list) to be moved.
+   * @param items The files' or directories' positions in the parent list to be moved.
+   * @param to The directories' positions for the items to be moved to.
    * @returns The datas removed from the tree.
    */
-  DragItems(items: (DirType | FileType | number)[]): (DirType | FileType)[];
+  dragItems(items: number[], to: number): FSItem[];
 
   /**
    * Browser to the given address.
@@ -70,10 +74,10 @@ export interface FileTreeInterface {
 
   /**
    * Broswer to a directory directly inside the current dir.
-   * @param dir The directory (or its position in the parent list) go browser in.
+   * @param dir The directory's position in the parent list go browser in.
    * @returns if the operation was successful.
    */
-  goIn(dir: DirType | number): boolean;
+  goIn(dir: number): boolean;
 }
 
 /**
@@ -151,10 +155,15 @@ export type DirType = {
   data?: Object;
 
   father?: DirType;
-  parents: (DirType | FileType)[];
+  parents: FSItem[];
 };
 
 /**
  * Direcotry address, eg.: ['home', 'dir1', 'dirB']
  */
 export type Address = string[];
+
+/**
+ * File System Item, it can be a directory or a file.
+ */
+export type FSItem = DirType | FileType;

@@ -12,13 +12,19 @@ import Link from "@material-ui/core/Link";
 import { useStyles } from "./UserHomeStyle";
 import { VisualFeedBack, SelectionData } from "./UserHomeModel";
 import { FileTree } from "../../Utils/FileTree/FileTree";
-import { DirType } from "../../Utils/FileTree/Models";
+import { DirType, FSItem } from "../../Utils/FileTree/Models";
 import { isFile } from "../../Utils/FileTree/Utils";
 import { isEmpty } from "../../Utils/utils";
 import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
 import { capitalize } from "../../Reducers/Locale/Tools";
 import Navbar from "../../Components/Navbar/Navbar";
 import Item from "../../Components/Item/Item";
+
+const initialTree: DirType = {
+  name: "Home",
+  parents: [],
+};
+const root = new FileTree(initialTree);
 
 function UserHome(props?: {}) {
   const classes = useStyles();
@@ -60,11 +66,6 @@ function UserHome(props?: {}) {
       name: "Галина",
     },
   ];
-  const initialTree: DirType = {
-    name: "Home",
-    parents: [],
-  };
-  const root = new FileTree(initialTree);
   const [tree, setTree] = useState(root.getTree());
   const [fileSel, setFileSel] = useState<SelectionData>({
     fname: { selected: false, feedback: VisualFeedBack.NONE },
@@ -72,6 +73,8 @@ function UserHome(props?: {}) {
   const [dirSel, setDirSel] = useState<SelectionData>({
     dname: { selected: false, feedback: VisualFeedBack.NONE },
   });
+  const [lastClickedFile, setLastClickedFile] = useState(-1);
+  const [lastClickedDir, setLastClickedDir] = useState(-1);
 
   useEffect(() => {
     root.loadTree({ ...initialTree, parents: mockFileTree });
@@ -101,6 +104,32 @@ function UserHome(props?: {}) {
     }
   }, [tree]);
 
+  const animate = (
+    name: string,
+    ani: VisualFeedBack,
+    toUpdate: SelectionData,
+    timeTimeMs: number,
+    isfile: boolean
+  ) => {
+    if (dirSel[name].feedback !== ani) {
+      toUpdate[name].feedback = ani;
+
+      // remove the animaiton feedback status after 700ms
+      setTimeout(() => {
+        let toUpdate = isfile ? { ...fileSel } : { ...dirSel };
+
+        if (toUpdate && toUpdate[name] && toUpdate[name].feedback === ani) {
+          toUpdate[name].feedback = VisualFeedBack.NONE;
+          if (isfile) {
+            setFileSel(toUpdate);
+          } else {
+            setDirSel(toUpdate);
+          }
+        }
+      }, timeTimeMs);
+    }
+  };
+
   const onDirClickItemHandler = (
     name: string,
     selectIt: boolean,
@@ -113,50 +142,50 @@ function UserHome(props?: {}) {
       if (dirSel[name]) {
         toUpdate = { ...dirSel };
 
-        // animation
-        if (dirSel[name].feedback !== VisualFeedBack.DENY) {
-          toUpdate[name].feedback = VisualFeedBack.DENY;
-
-          // remove the animaiton feedback status after 1s
-          setTimeout(() => {
-            let toUpdate = { ...dirSel };
-
-            if (
-              toUpdate &&
-              toUpdate[name] &&
-              toUpdate[name].feedback === VisualFeedBack.DENY
-            ) {
-              toUpdate[name].feedback = VisualFeedBack.NONE;
-              setDirSel(toUpdate);
-            }
-          }, 1000);
-        }
+        animate(name, VisualFeedBack.DENY, toUpdate, 700, false);
       }
     } else if (shiftKey) {
+      let currentPos = root.getItem(name)[1];
+      if (currentPos !== undefined) {
+        let direction = currentPos < lastClickedDir ? 1 : -1;
+        toUpdate = { ...dirSel };
+
+        for (
+          let pos = currentPos;
+          pos != lastClickedDir;
+          pos = pos + direction
+        ) {
+          toUpdate[tree.parents[pos].name].selected = selectIt;
+        }
+
+        animate(name, VisualFeedBack.SELECT, toUpdate, 200, false);
+
+        setDirSel(toUpdate);
+        setLastClickedDir(-1);
+      } else {
+        // this shall never happen, but just in case.
+        console.error(
+          `some unexpected error happend, the current "${name}" dir is not present in the current directory`
+        );
+      }
     } else if (ctrlKey) {
       if (dirSel[name]) {
         toUpdate = { ...dirSel };
 
         // select or unselect only the clicked one
-        toUpdate[name].selected = !toUpdate[name].selected;
+        toUpdate[name].selected = selectIt;
 
-        // animation
-        if (dirSel[name].feedback !== VisualFeedBack.SELECT) {
-          toUpdate[name].feedback = VisualFeedBack.SELECT;
+        animate(name, VisualFeedBack.SELECT, toUpdate, 200, false);
 
-          // remove the animaiton feedback status after 1s
-          setTimeout(() => {
-            let toUpdate = { ...dirSel };
-
-            if (
-              toUpdate &&
-              toUpdate[name] &&
-              toUpdate[name].feedback === VisualFeedBack.SELECT
-            ) {
-              toUpdate[name].feedback = VisualFeedBack.NONE;
-              setDirSel(toUpdate);
-            }
-          }, 200);
+        // recornd last clicked
+        let index = root.getItem(name)[1];
+        if (index === undefined) {
+          // this shall never happen, but just in case...
+          console.error(
+            `something really wrong happened, the selected folder ${name} is no in the current dir`
+          );
+        } else {
+          setLastClickedDir(index);
         }
       }
     } else {
@@ -165,29 +194,25 @@ function UserHome(props?: {}) {
 
         // unselect everything
         for (let dir in toUpdate) {
-          toUpdate[dir].selected = false;
+          if (name !== dir) {
+            toUpdate[dir].selected = false;
+          }
         }
 
         // select or unselect only the clicked one
-        toUpdate[name].selected = !toUpdate[name].selected;
+        toUpdate[name].selected = selectIt;
 
-        // animation
-        if (dirSel[name].feedback !== VisualFeedBack.SELECT) {
-          toUpdate[name].feedback = VisualFeedBack.SELECT;
+        animate(name, VisualFeedBack.SELECT, toUpdate, 200, false);
 
-          // remove the animaiton feedback status after 1s
-          setTimeout(() => {
-            let toUpdate = { ...dirSel };
-
-            if (
-              toUpdate &&
-              toUpdate[name] &&
-              toUpdate[name].feedback === VisualFeedBack.SELECT
-            ) {
-              toUpdate[name].feedback = VisualFeedBack.NONE;
-              setDirSel(toUpdate);
-            }
-          }, 200);
+        // recornd last clicked
+        let index = root.getItem(name)[1];
+        if (index === undefined) {
+          // this shall never happen, but just in case...
+          console.error(
+            `something really wrong happened, the selected folder ${name} is no in the current dir`
+          );
+        } else {
+          setLastClickedDir(index);
         }
       }
     }
@@ -217,57 +242,120 @@ function UserHome(props?: {}) {
       <Navbar />
       <CssBaseline />
 
-      <Breadcrumbs
-        // maxItems={2}
-        aria-label="breadcrumb"
-        className={classes.breadcrumbs}
-      >
-        <Link
-          color="inherit"
-          // href="/"
-          // onClick={() => {
-          //   console.log("click");
-          // }}
-        >
-          Home
-        </Link>
-      </Breadcrumbs>
-
       <div className={classes.mainContainer}>
+        <Breadcrumbs
+          // maxItems={2}
+          aria-label="breadcrumb"
+          className={classes.breadcrumbs}
+        >
+          <Link
+            color="inherit"
+            // href="/"
+            // onClick={() => {
+            //   console.log("click");
+            // }}
+          >
+            Home
+          </Link>
+        </Breadcrumbs>
+
         <Typography variant="h5" color="textPrimary">
           {capitalize(language.msgs.folders)}
         </Typography>
-        {/* rendering folders */}
+        {/* rendering directories */}
         <div className={classes.flexcont}>
           {tree.parents
             .filter((value) => !isFile(value))
-            .map((value) => (
+            .map((dir: DirType) => (
               <Item
                 folder
                 className={
-                  dirSel[value.name]?.feedback === VisualFeedBack.DENY
+                  dirSel[dir.name]?.feedback === VisualFeedBack.DENY
                     ? classes.deny
-                    : dirSel[value.name]?.feedback === VisualFeedBack.ACTION_ACC
+                    : dirSel[dir.name]?.feedback === VisualFeedBack.ACTION_ACC
                     ? classes.dropedIn
-                    : dirSel[value.name]?.feedback === VisualFeedBack.SELECT
+                    : dirSel[dir.name]?.feedback === VisualFeedBack.SELECT
                     ? classes.pressIn
                     : ""
                 }
-                name={value.name}
+                name={dir.name}
                 itemType="item"
-                stopPropagation={true}
+                stopPropagation
                 droppableItemType="item"
-                selected={dirSel[value.name]?.selected}
+                selected={dirSel[dir.name]?.selected}
                 onClick={(selected, shiftKey, ctrlKey) => {
-                  onDirClickItemHandler(
-                    value.name,
-                    selected,
-                    shiftKey,
-                    ctrlKey
-                  );
+                  onDirClickItemHandler(dir.name, selected, shiftKey, ctrlKey);
                 }}
-                droppedIn={() => {
-                  // code
+                droppedIn={(item) => {
+                  let toUpdate: SelectionData | undefined;
+                  let selecteds: [FSItem, number][];
+
+                  if ((item as any).name === dir.name) {
+                    // cannot move a dir to itself
+                    toUpdate = { ...dirSel };
+                    animate(
+                      dir.name,
+                      VisualFeedBack.DENY,
+                      toUpdate,
+                      300,
+                      false
+                    );
+                  } else {
+                    // get all files to be moved
+                    selecteds = tree.parents.map((value, index) => {
+                      if (
+                        value.name === dir.name &&
+                        dirSel[dir.name]?.selected
+                      ) {
+                        toUpdate = { ...dirSel };
+                        animate(
+                          dir.name,
+                          VisualFeedBack.DENY,
+                          toUpdate,
+                          300,
+                          false
+                        );
+
+                        return [value, -1];
+                      } else {
+                        if (
+                          dirSel[value.name]?.selected ||
+                          fileSel[value.name]?.selected ||
+                          (item as any).name === value.name
+                        ) {
+                          return [value, index];
+                        } else {
+                          return [value, -1];
+                        }
+                      }
+                    });
+                    selecteds = selecteds.filter((value) => value[1] !== -1);
+
+                    // move selected items
+                    if (selecteds) {
+                      if (!toUpdate) {
+                        toUpdate = { ...dirSel };
+                      }
+
+                      // delete from the view
+                      for (let sel of selecteds) {
+                        delete toUpdate[sel[0].name];
+                      }
+                      // move
+                      root.dragItems(
+                        selecteds.map((value) => value[1]),
+                        tree.parents.indexOf(dir)
+                      );
+
+                      // update tree
+                      setTree(root.getCurrentTree());
+                    }
+
+                    // update infos
+                    if (toUpdate) {
+                      setDirSel(toUpdate);
+                    }
+                  }
                 }}
               ></Item>
             ))}
@@ -282,8 +370,16 @@ function UserHome(props?: {}) {
           {/* rendering files */}
           {tree.parents
             .filter((value) => isFile(value))
-            .map((value) => (
-              <Item name={value.name} itemType="item" stopPropagation={true} />
+            .map((file) => (
+              <Item
+                name={file.name}
+                itemType="item"
+                stopPropagation
+                selected={fileSel[file.name]?.selected}
+                // onClick={(selected, shiftKey, ctrlKey) => {
+                //   onFileClickItemHandler(file.name, selected, shiftKey, ctrlKey);
+                // }}
+              />
             ))}
         </div>
       </div>

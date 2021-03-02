@@ -2,7 +2,8 @@ import { Address, Browser, DirType } from "./Models";
 import { findItemIndexInDir, isFile } from "./Utils";
 
 export class TreeBrowser implements Browser {
-  private pointer: DirType;
+  public pointer: DirType;
+
   private navStack: DirType[];
 
   constructor(fileTree: DirType) {

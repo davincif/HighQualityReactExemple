@@ -1,10 +1,10 @@
-import { DirType, FileType } from "./Models";
+import { DirType, FSItem } from "./Models";
 
-export function isFile(item?: DirType | FileType): boolean {
+export function isFile(item?: FSItem): boolean {
   return item ? (item as any).parents === undefined : false;
 }
 
-export function areNamesDiferents(parents: (DirType | FileType)[]): boolean {
+export function areNamesDiferents(parents: FSItem[]): boolean {
   let names: string[] = [];
   let foundRepeatedName = false;
 

@@ -11,7 +11,7 @@ export const useStyles = makeStyles((theme) => ({
   icon: {
     margin: theme.spacing("auto", "auto"),
     color: theme.palette.primary.main,
-    fontSize: "100px",
+    fontSize: "80px",
   },
   dropWrapper: {
     margin: theme.spacing(0.4, 0.8),
@@ -23,7 +23,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   nameLabel: {
     fontSize: theme.typography.body1.fontSize,
-    // backgroundColor: theme.palette.primary.light,
+    backgroundColor: "transparent",
     color: theme.palette.primary.contrastText,
   },
 }));

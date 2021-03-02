@@ -1,6 +1,6 @@
 // Third party libs
 import React from "react";
-import { Chip, CssBaseline, Tooltip } from "@material-ui/core";
+import { CssBaseline, Tooltip } from "@material-ui/core";
 import FolderRoundedIcon from "@material-ui/icons/FolderRounded";
 import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
 import { DropTargetMonitor, useDrag, useDrop } from "react-dnd";
@@ -117,11 +117,12 @@ function Item({
             />
           </Tooltip>
         )}
-        {name ? (
-          <Tooltip title={name}>
-            <Chip label={nameCutter(name)} className={classes.nameLabel} />
-          </Tooltip>
-        ) : undefined}
+        {name
+          ? // <Tooltip title={name}>
+            //   <Chip label={nameCutter(name)} className={classes.nameLabel} />
+            // </Tooltip>
+            nameCutter(name)
+          : undefined}
       </div>
     </div>
   );
