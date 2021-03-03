@@ -8,7 +8,7 @@ export class TreeBrowser implements Browser {
 
   constructor(fileTree: DirType) {
     this.pointer = fileTree;
-    this.navStack = [];
+    this.navStack = [fileTree];
   }
 
   public getAdress(): Address {
@@ -17,19 +17,27 @@ export class TreeBrowser implements Browser {
 
   public navUp(levels: number): number {
     let taken: number;
+    let save = this.navStack[0];
 
     // remove "levels" from stack
+    let popped: DirType | undefined;
     for (taken = 0; taken < levels; taken++) {
-      let popped = this.navStack.pop();
+      popped = this.navStack.pop();
       // just in case there's nothing to be poped already
       if (popped) {
         this.pointer = popped;
+      } else {
         break;
       }
     }
 
     // update pointer
-    this.pointer = this.navStack[this.navStack.length - 1];
+    if (popped) {
+      this.pointer = this.navStack[this.navStack.length - 1];
+    } else {
+      this.pointer = save;
+      this.navStack.push(save);
+    }
 
     return taken;
   }
@@ -53,8 +61,8 @@ export class TreeBrowser implements Browser {
     }
 
     // move pointer
-    this.navStack.push(this.pointer);
     this.pointer = this.pointer.parents[dir] as DirType;
+    this.navStack.push(this.pointer);
 
     return true;
   }

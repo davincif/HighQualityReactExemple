@@ -367,20 +367,29 @@ function UserHome(props?: {}) {
           aria-label="breadcrumb"
           className={classes.breadcrumbs}
         >
-          <Link
-            color="inherit"
-            // href="/"
-            // onClick={() => {
-            //   console.log("click");
-            // }}
-          >
-            Home
-          </Link>
+          {root.getAdress().map((value, index, addrs) => (
+            <Link
+              color="inherit"
+              // href="/"
+              onClick={() => {
+                let levels = addrs.length - index - 1;
+                if (levels > 0) {
+                  root.goUp(levels);
+                  setTree(root.getCurrentTree());
+                }
+              }}
+            >
+              {value}
+            </Link>
+          ))}
         </Breadcrumbs>
 
-        <Typography variant="h5" color="textPrimary">
-          {capitalize(language.msgs.folders)}
-        </Typography>
+        {tree.parents.filter((value) => !isFile(value)).length > 0 ? (
+          <Typography variant="h5" color="textPrimary">
+            {capitalize(language.msgs.folders)}
+          </Typography>
+        ) : null}
+
         {/* rendering directories */}
         <div className={classes.flexcont}>
           {tree.parents
@@ -404,6 +413,18 @@ function UserHome(props?: {}) {
                 selected={dirSel[dir.name]?.selected}
                 onClick={(selected, shiftKey, ctrlKey) => {
                   onDirClickHandler(dir.name, selected, shiftKey, ctrlKey);
+                }}
+                onDoubleClick={() => {
+                  let index = root.getItem(dir.name)[1];
+                  if (index !== undefined) {
+                    root.goIn(index);
+                    setTree(root.getCurrentTree());
+                  } else {
+                    // that should be impossible to happen, but just in case
+                    console.error(
+                      `The dir "${dir.name}" is not present in the current directory`
+                    );
+                  }
                 }}
                 droppedIn={(item) => {
                   let toUpdate: SelectionData | undefined;
@@ -482,9 +503,11 @@ function UserHome(props?: {}) {
 
         <Divider variant="middle" className={classes.divider} />
 
-        <Typography variant="h5" color="textPrimary">
-          {capitalize(language.msgs.files)}
-        </Typography>
+        {tree.parents.filter((value) => isFile(value)).length > 0 ? (
+          <Typography variant="h5" color="textPrimary">
+            {capitalize(language.msgs.files)}
+          </Typography>
+        ) : null}
         <div className={classes.flexcont}>
           {/* rendering files */}
           {tree.parents

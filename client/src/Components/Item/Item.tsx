@@ -96,7 +96,6 @@ function Item({
         if (stopPropagation) {
           event.stopPropagation();
         }
-        console.log("double clicked");
         onDoubleClick();
       }}
     >

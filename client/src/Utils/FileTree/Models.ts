@@ -70,7 +70,7 @@ export interface FileTreeInterface {
    * @param levels How much levels to go up on the Stack.
    * @returns how many levels were possible to ascend
    */
-  goUp(levels: number): boolean;
+  goUp(levels: number): number;
 
   /**
    * Broswer to a directory directly inside the current dir.

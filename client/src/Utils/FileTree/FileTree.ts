@@ -107,14 +107,18 @@ export class FileTree implements FileTreeInterface {
   }
 
   public goToAddress(address: Address): boolean {
-    throw new Error("Method not implemented.");
+    return this.browser.navTo(address);
   }
 
-  public goUp(levels: number): boolean {
-    throw new Error("Method not implemented.");
+  public goUp(levels: number): number {
+    return this.browser.navUp(levels);
   }
 
   public goIn(dir: number): boolean {
-    throw new Error("Method not implemented.");
+    return this.browser.navDown(dir);
+  }
+
+  public getAdress(): Address {
+    return this.browser.getAdress();
   }
 }
