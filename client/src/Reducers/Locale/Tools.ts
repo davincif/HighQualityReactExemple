@@ -33,6 +33,6 @@ export const fallbackBuilder = (
   return { ...fallback, ...msgs };
 };
 
-export const get_browser_lang: () => string = () => {
+export const getBrowserLang: () => string = () => {
   return navigator.language || (navigator as any).userLanguage;
 };

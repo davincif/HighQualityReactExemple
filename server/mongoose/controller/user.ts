@@ -53,14 +53,14 @@ export const checkPassword = async ({
     if (user) {
       userToCheck.password = (user as any).password;
     } else {
-      return null;
+      return;
     }
 
     password = crypto
       .createHmac("sha512", secret)
       .update(password)
       .digest("hex");
-    return password == userToCheck.password;
+    return { allowed: password == userToCheck.password, user: user };
   }
 };
 

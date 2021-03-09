@@ -1,7 +1,7 @@
 // Third Party Imports
-import { UserInputError } from "apollo-server";
+import { UserInputError } from "apollo-server-express";
 import { CookieOptions } from "express";
-import jwt from "jsonwebtoken";
+import { sign } from "jsonwebtoken";
 
 // Internal Imports
 import {
@@ -14,18 +14,20 @@ import {
 import { dateScalar } from "../scalars/date";
 
 // getting environment variables
-const secret = process.env.PASSWORD_SALT ? process.env.PASSWORD_SALT : "";
-const jwtsalt = process.env.JWT_SECRET ? process.env.JWT_SECRET : "";
-const tokenExpirationHours = Number(
+const SECRET = process.env.PASSWORD_SALT ? process.env.PASSWORD_SALT : "";
+const JWTSALT = process.env.JWT_SECRET ? process.env.JWT_SECRET : "";
+const TOKEN_EXPIRATION_HOURS = Number(
   process.env.TOKEN_EXPIRATION_HOURS ? process.env.TOKEN_EXPIRATION_HOURS : ""
 );
-const refreshTokenExpirationDays = Number(
+const REFRESH_TOKEN_EXPIRATION_DAYS = Number(
   process.env.REFRESH_TOKEN_EXPIRATION_DAYS
     ? process.env.REFRESH_TOKEN_EXPIRATION_DAYS
     : ""
 );
-const serverDomain = process.env.SERVER_DOMAIN ? process.env.SERVER_DOMAIN : "";
-const jwtAlgorithm: any = process.env.JWT_ALGORITHM
+const SERVER_DOMAIN = process.env.SERVER_DOMAIN
+  ? process.env.SERVER_DOMAIN
+  : "";
+const JWT_ALGORITHM: any = process.env.JWT_ALGORITHM
   ? process.env.JWT_ALGORITHM
   : "";
 
@@ -37,22 +39,28 @@ export default {
       const maximumExpirationDate = new Date(
         now.getFullYear(),
         now.getMonth(),
-        now.getDate() + refreshTokenExpirationDays
+        now.getDate() + REFRESH_TOKEN_EXPIRATION_DAYS
       );
       let refresh = "";
       let auth = "";
 
       // check if password if right
-      let allowed = !!(await checkPassword({
-        secret: secret,
+      let data = await checkPassword({
+        secret: SECRET,
         password: password,
         userToCheck: { nick },
-      }));
+      });
+      let allowed = false;
+      let user;
+      if (data) {
+        allowed = data.allowed;
+        user = data.user;
+      }
 
       // if password is right, create JWT's
       if (allowed) {
         // create authentication token
-        auth = jwt.sign(
+        auth = sign(
           {
             user: {},
             nbf: now.getTime(),
@@ -61,17 +69,17 @@ export default {
               now.getFullYear(),
               now.getMonth(),
               now.getDate(),
-              now.getHours() + tokenExpirationHours
+              now.getHours() + TOKEN_EXPIRATION_HOURS
             ).getTime(),
             iss: "localhost",
             sub: "localhost",
           },
-          jwtsalt,
-          { algorithm: jwtAlgorithm }
+          JWTSALT,
+          { algorithm: JWT_ALGORITHM }
         );
 
         // create refresh token
-        refresh = jwt.sign(
+        refresh = sign(
           {
             user: {},
             nbf: now.getTime(),
@@ -80,8 +88,8 @@ export default {
             iss: "localhost",
             sub: "localhost",
           },
-          jwtsalt,
-          { algorithm: jwtAlgorithm }
+          JWTSALT,
+          { algorithm: JWT_ALGORITHM }
         );
 
         // set cookies
@@ -91,13 +99,15 @@ export default {
           expires: maximumExpirationDate,
           secure: true,
           sameSite: "strict",
-          domain: serverDomain,
+          domain: SERVER_DOMAIN,
         };
-        res.cookie("authToken", auth, cookieoOpts);
-        res.cookie("refreshToken", refresh, cookieoOpts);
+        res.cookie("access-token", auth, cookieoOpts);
+        res.cookie("refresh-token", refresh, cookieoOpts);
+      } else {
+        user = undefined;
       }
 
-      return { allowed, refresh, auth };
+      return user;
     },
     users: () => getAllUsers(),
     user: (_: any, { nick }: any) => findUser({ nick }),
@@ -105,7 +115,7 @@ export default {
   },
   Mutation: {
     createUser: async (_: any, { data }: any) => {
-      let user = await createUser(secret, data);
+      let user = await createUser(SECRET, data);
 
       if (typeof user === "string") {
         throw new UserInputError(user);

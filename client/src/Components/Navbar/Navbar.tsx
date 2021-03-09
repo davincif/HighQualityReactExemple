@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
+import { AccountCircle } from "@material-ui/icons";
 
 // Internal imports
 import { useStyles } from "./NavbarStyle";
@@ -17,7 +18,7 @@ import USFlag from "../Icons/USFlag";
 import BrazilianFlag from "../Icons/BrazilianFlag";
 import SpanishFlag from "../Icons/SpanishFlag";
 import RussianFlag from "../Icons/RussianFlag";
-import { get_browser_lang } from "../../Reducers/Locale/Tools";
+import { getBrowserLang } from "../../Reducers/Locale/Tools";
 
 function Navbar(props?: {}) {
   const { language, dispatch } = useContext(LocaleContext);
@@ -27,7 +28,7 @@ function Navbar(props?: {}) {
   useEffect(() => {
     // setting prefered language
     let lang = localStorage.getItem("lang");
-    dispatch({ type: lang ? lang : get_browser_lang() });
+    dispatch({ type: lang ? lang : getBrowserLang() });
   }, []);
 
   let openLoginIcon = Boolean(langIconAnchorEl);
@@ -126,6 +127,14 @@ function Navbar(props?: {}) {
               <RussianFlag />
             </MenuItem>
           </Menu>
+          <IconButton
+            aria-label="account of current user"
+            aria-controls="primary-search-account-menu"
+            aria-haspopup="true"
+            color="inherit"
+          >
+            <AccountCircle />
+          </IconButton>
         </Toolbar>
       </AppBar>
     </div>

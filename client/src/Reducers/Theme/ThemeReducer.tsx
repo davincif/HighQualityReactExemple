@@ -1,4 +1,3 @@
-// Material
 import { createMuiTheme } from "@material-ui/core/styles";
 import { grey } from "@material-ui/core/colors";
 
@@ -14,9 +13,9 @@ export const initialState = createMuiTheme({
       primary: "#ffffff",
     },
     primary: {
-      dark: "#251D59",
-      main: "#5B48D9",
-      light: "#8B8FD9",
+      dark: "#3A2D8A",
+      main: "#5E50E0",
+      light: "#6B6FFF",
     },
     secondary: {
       dark: "#804D00",

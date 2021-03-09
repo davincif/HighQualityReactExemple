@@ -3,8 +3,11 @@ import * as path from "path";
 
 // Third Party Imports
 import mongoose from "mongoose";
-import { ApolloServer } from "apollo-server";
 import * as dotenv from "dotenv";
+import { ApolloServer } from "apollo-server-express";
+import express from "express";
+import cookieParser from "cookie-parser";
+import { verify } from "jsonwebtoken";
 
 // loading environment variables
 dotenv.config({ path: path.join(__dirname, ".env.dev") });
@@ -15,6 +18,7 @@ const MONGO_PASS = process.env.MONGO_PASS;
 const MONGO_HOST = process.env.MONGO_HOST;
 const MONGO_PORT = process.env.MONGO_PORT;
 // const MONGO_DATABASE = "familly_bugget";
+const JWTSALT = process.env.JWT_SECRET ? process.env.JWT_SECRET : "";
 
 const startServer = ({ typeDefs, resolvers }: any) => {
   // Mongo DB Connetion Establishment
@@ -30,26 +34,52 @@ const startServer = ({ typeDefs, resolvers }: any) => {
     console.log(`🖥  Database connected`);
   });
 
-  // Opening Listener to Apollo Server
+  // Creating Apollo Server
   const server = new ApolloServer({
     typeDefs,
     resolvers,
     context: ({ req, res }) => {
-      // { req, res, connection }
       // console.log("req.headers.authorization", req.headers.authorization);
       // console.log("res.cookie", res.cookie);
 
-      return { res };
-      // return { cookie: () => {} };
+      return { req, res };
     },
+    debug: true,
+    playground: true,
   });
-  server
-    .listen({ port: APOLLO_PORT })
-    .then(({ url }) => {
-      console.log(`⚡ Server started at ${url}`);
+
+  // Opening Express Server
+  const app = express();
+
+  app.use(cookieParser());
+  app.use((req, _, next) => {
+    const accessToken = req.cookies["access-token"];
+    console.log("accessToken", accessToken);
+
+    try {
+      const data = verify(accessToken, JWTSALT) as any;
+      console.log("data", data);
+      (req as any).userId = data.userId;
+    } catch {
+      console.log("not valid token");
+    }
+
+    next();
+  });
+
+  // Add Express as Middeware for Apollo
+  server.applyMiddleware({ app });
+
+  // Opening Express Server Listener
+  app
+    .listen({ port: APOLLO_PORT }, () => {
+      console.log(
+        `🚀 Server ready at http://localhost:4000${server.graphqlPath}`
+      );
     })
-    .catch((err) => {
-      console.log(`💥 Some catastrophic error happened: ${err}`);
+    .on("error", (err) => {
+      console.log(`💥 Some catastrophic error happened: ${err.message}`);
+      console.error(err);
     });
 };
 

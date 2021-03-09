@@ -22,6 +22,7 @@ import { useStyles } from "./FamileStyle";
 import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
 import { capitalize, capitalizeInitials } from "../../Reducers/Locale/Tools";
 import Navbar from "../../Components/Navbar/Navbar";
+import AuthRequired from "../../Components/AuthRequired/AuthRequired";
 
 function Family(props?: {}) {
   const classes = useStyles();
@@ -100,6 +101,8 @@ function Family(props?: {}) {
 
   return (
     <div>
+      <AuthRequired />
+
       <Navbar />
       <Container fixed className={classes.mainContainer}>
         <CssBaseline />

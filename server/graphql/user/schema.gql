@@ -11,11 +11,6 @@ type User {
   active: Boolean
 }
 
-type loginAnswer {
-  allowed: Boolean!
-  # token: String
-}
-
 input UserInput {
   nick: String!
   name: String!
@@ -28,7 +23,7 @@ input UserInput {
 
 
 type Query {
-  login(nick: String!, password: String!): loginAnswer!
+  login(nick: String!, password: String!): User
   users: [User]!
   # user(id: ID!): User
   user(nick: String!): User

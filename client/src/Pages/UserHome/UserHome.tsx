@@ -19,6 +19,7 @@ import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
 import { capitalize } from "../../Reducers/Locale/Tools";
 import Navbar from "../../Components/Navbar/Navbar";
 import Item from "../../Components/Item/Item";
+import AuthRequired from "../../Components/AuthRequired/AuthRequired";
 
 const initialTree: DirType = {
   name: "Home",
@@ -358,9 +359,10 @@ function UserHome(props?: {}) {
         cleanSelecteds();
       }}
     >
+      <AuthRequired />
+
       <Navbar />
       <CssBaseline />
-
       <div className={classes.mainContainer}>
         <Breadcrumbs
           // maxItems={2}

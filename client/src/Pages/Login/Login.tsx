@@ -1,5 +1,6 @@
 // Third party libs
 import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
 
 // material-ui
@@ -21,24 +22,15 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { useStyles } from "./LoginStyle";
 import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
 import { capitalize, capitalizeInitials } from "../../Reducers/Locale/Tools";
+import { UserInfoContext } from "../../Reducers/UserInfo/UserInfoContext";
 import Navbar from "../../Components/Navbar/Navbar";
 import { USER_LOGIN } from "../../GraphQL/Queries";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        davincif
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
 function Login(props?: {}) {
   const { language } = useContext(LocaleContext);
+  const { infoDispatch } = useContext(UserInfoContext);
+
+  const history = useHistory();
 
   const [usernick, setUsernick] = useState("");
   const [password, setPassword] = useState("");
@@ -51,11 +43,13 @@ function Login(props?: {}) {
     setLoading(false);
 
     if (error) {
-      // code
       console.error("error", error);
     } else if (data) {
-      if (data.login.allowed) {
-        console.log("ready to login");
+      if (data.login) {
+        infoDispatch({ type: "LOGIN", data });
+        history.push("/userhome");
+      } else {
+        infoDispatch({ type: "LOGOUT" });
       }
     }
   }, [error, data]);
@@ -134,26 +128,17 @@ function Login(props?: {}) {
               </Grid>
               <Grid item>
                 <Link href="/signup" variant="body2">
-                  {/* {"Don't have an account? Sign Up"} */}
                   {capitalize(language.msgs.dont_have_an_account_q)}{" "}
                   {capitalizeInitials(language.msgs.sign_up)}
                 </Link>
               </Grid>
             </Grid>
           </form>
-          {/* <Button
-          // type="submit"
-          fullWidth
-          variant="contained"
-          color="primary"
-          className={classes.submit}
-          onClick={() => dispatch({ type: "DARK" })}
-        >
-          Dark Theme
-        </Button> */}
         </div>
         <Box mt={8}>
-          <Copyright />
+          <Typography variant="body2" color="textSecondary" align="center">
+            Copyright © davincif 2021.
+          </Typography>
         </Box>
       </Container>
     </div>

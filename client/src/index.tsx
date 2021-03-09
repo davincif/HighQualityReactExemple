@@ -12,21 +12,24 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import ThemeContextProdiver from "./Reducers/Theme/ThemeContext";
 import LocaleContextProdiver from "./Reducers/Locale/LocaleContext";
+import UserInfoContextProdiver from "./Reducers/UserInfo/UserInfoContext";
 
 ReactDOM.render(
   <React.StrictMode>
     <ThemeContextProdiver>
       <LocaleContextProdiver>
-        <BrowserView>
-          <DndProvider backend={HTML5Backend}>
-            <App />
-          </DndProvider>
-        </BrowserView>
-        <MobileView>
-          <DndProvider backend={TouchBackend}>
-            <App />
-          </DndProvider>
-        </MobileView>
+        <UserInfoContextProdiver>
+          <BrowserView>
+            <DndProvider backend={HTML5Backend}>
+              <App />
+            </DndProvider>
+          </BrowserView>
+          <MobileView>
+            <DndProvider backend={TouchBackend}>
+              <App />
+            </DndProvider>
+          </MobileView>
+        </UserInfoContextProdiver>
       </LocaleContextProdiver>
     </ThemeContextProdiver>
   </React.StrictMode>,
