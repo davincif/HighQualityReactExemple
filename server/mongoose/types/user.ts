@@ -5,7 +5,7 @@ export type UserMetadata = {
   password: string;
   email: string;
   birth: string;
-  accessLevel: "master" | "family" | "guest";
+  createdAt: string;
   active: boolean;
 };
 
@@ -16,8 +16,6 @@ export type HollowUserMetadata = {
   password?: string;
   email?: string;
   birth?: string;
-  accessLevel?: "master" | "family" | "guest";
+  createdAt?: string;
   active?: boolean;
 };
-
-export const validAcessLevels = ["master", "family", "guest"];

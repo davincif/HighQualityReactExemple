@@ -1,9 +1,13 @@
+// External lib Imports
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
+// Local Imports
+import { timeNow, standardFormat } from "../../utils/times";
+
 const UserSchema = new Schema({
   nick: {
-    // _id: Schema.Types.ObjectId,
+    // id: Schema.Types.ObjectId,
     type: String,
     required: [true, "Field nick is required"],
     unique: true,
@@ -25,11 +29,10 @@ const UserSchema = new Schema({
     type: String,
     required: [true, "Field birth is required"],
   },
-  accessLevel: {
+  createdAt: {
     type: String,
-    enum: ["master", "family", "guest"],
-    default: "guest",
-    required: [true, "Fied accessLevel is required"],
+    required: [true, "Field createdAt is required"],
+    default: () => standardFormat(timeNow(), false),
   },
   active: {
     type: Boolean,

@@ -1,5 +1,10 @@
-// https://www.apollographql.com/docs/apollo-server/schema/custom-scalars/
+/// https://www.apollographql.com/docs/apollo-server/schema/custom-scalars/
+
+// Third party libs
 import { GraphQLScalarType } from "graphql";
+
+// Internal imports
+import { loadFormatedDate, standardFormat } from "../../utils/times";
 
 export const dateScalar = new GraphQLScalarType({
   name: "Date",
@@ -10,10 +15,9 @@ export const dateScalar = new GraphQLScalarType({
       throw new Error("Date is invalid");
     }
 
-    return `${value.getDate()}/${value.getMonth()}/${value.getFullYear()}`;
+    return standardFormat(value);
   },
   parseValue(value) {
-    let date = value.split("/");
-    return new Date(date[2], date[1] - 1, date[0]);
+    return loadFormatedDate(value);
   },
 });

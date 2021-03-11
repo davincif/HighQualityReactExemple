@@ -1,0 +1,20 @@
+type File {
+  _id: String!
+  name: String!
+  father: String!
+  owner: String!
+  createdAt: String!
+  createdBy: String!
+  modifiedAt: String!
+  modifiedBy: String!
+  access: Access!
+}
+
+
+# type Query {
+
+# }
+
+# type Mutation {
+
+# }

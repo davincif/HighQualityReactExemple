@@ -1,17 +1,20 @@
 // Third Party Imports
-import { UserInputError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { CookieOptions } from "express";
 import { sign } from "jsonwebtoken";
 
 // Internal Imports
+import { dateScalar } from "../scalars/date";
 import {
   checkPassword,
   createUser,
+  deleteUser,
   findUser,
   getAllUsers,
   upateUser,
 } from "../../mongoose/controller/user";
-import { dateScalar } from "../scalars/date";
+import { createDirectory } from "../../mongoose/controller/directory";
+import { dbconnection } from "../../mongoose/dbConnection";
 
 // getting environment variables
 const SECRET = process.env.PASSWORD_SALT ? process.env.PASSWORD_SALT : "";
@@ -50,20 +53,16 @@ export default {
         password: password,
         userToCheck: { nick },
       });
-      let allowed = false;
-      let user;
-      if (data) {
-        allowed = data.allowed;
-        user = data.user;
-      }
 
       // if password is right, create JWT's
-      if (allowed) {
+      if (data && data.allowed) {
         // create authentication token
         auth = sign(
           {
-            user: {},
-            nbf: now.getTime(),
+            user: {
+              nick: data.user.nick,
+            },
+            // nbf: now.getTime(),
             iat: now.getTime(),
             exp: new Date(
               now.getFullYear(),
@@ -81,8 +80,10 @@ export default {
         // create refresh token
         refresh = sign(
           {
-            user: {},
-            nbf: now.getTime(),
+            user: {
+              nick: data.user.nick,
+            },
+            // nbf: now.getTime(),
             iat: now.getTime(),
             exp: maximumExpirationDate.getTime(),
             iss: "localhost",
@@ -101,28 +102,82 @@ export default {
           sameSite: "strict",
           domain: SERVER_DOMAIN,
         };
+
         res.cookie("access-token", auth, cookieoOpts);
         res.cookie("refresh-token", refresh, cookieoOpts);
       } else {
-        user = undefined;
+        data = {
+          allowed: false,
+          user: undefined as any,
+        };
       }
 
-      return user;
+      return data.user;
     },
-    users: () => getAllUsers(),
-    user: (_: any, { nick }: any) => findUser({ nick }),
-    // user: (_: any, { id }: any) => User.findById(id),
+    users: (parent: any, args: any, { req }: any) => {
+      if (!req.nick) {
+        throw new AuthenticationError("not loged");
+      }
+
+      return getAllUsers();
+    },
+    user: (_: any, { nick }: any, { req }: any) => {
+      if (!req.nick) {
+        throw new AuthenticationError("not loged");
+      }
+
+      return findUser({ nick });
+      // User.findById(id);
+    },
   },
   Mutation: {
     createUser: async (_: any, { data }: any) => {
-      let user = await createUser(SECRET, data);
+      // const session = await dbconnection.startSession();
+      // session.startTransaction();
 
-      if (typeof user === "string") {
-        throw new UserInputError(user);
+      let user: any = await createUser(SECRET, data);
+
+      if (!Array.isArray(user) || user.length <= 0) {
+        // await session.abortTransaction();
+        // session.endSession();
+        throw new UserInputError(`${user}`);
+      } else {
+        user = user[0];
       }
 
+      // create user's root directory
+      let dir: any;
+      try {
+        dir = await createDirectory({ name: "root", owner: user._id });
+      } catch {
+        // await session.abortTransaction();
+        // session.endSession();
+
+        deleteUser({ id: user._id });
+
+        throw new Error(
+          "Some unexpected internal error happen when creating user's directory"
+        );
+      }
+
+      // // commit changes to db
+      // try {
+      //   await session.commitTransaction();
+      // } catch (error) {
+      //   await session.abortTransaction();
+      //   session.endSession();
+      //   throw error;
+      // }
+
+      // session.endSession();
       return user;
     },
-    updateUser: (_: any, { id, data }: any) => upateUser(id, data),
+    updateUser: (_: any, { id, data }: any, { req }: any) => {
+      if (!req.nick) {
+        throw new AuthenticationError("not loged");
+      }
+
+      return upateUser(id, data);
+    },
   },
 };

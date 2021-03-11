@@ -1,33 +1,36 @@
 // Node Imports
 import crypto from "crypto";
+import { QueryOptions, SaveOptions } from "mongoose";
 
 // External lib Imports
-import { Document } from "mongoose";
 
 // Local Imports
 import User from "../models/user";
 import {
   HollowUserMetadata,
   UserMetadata,
-  validAcessLevels,
+  // validaccessLevels,
 } from "../types/user";
 
 export const getAllUsers = () => User.find();
 
-export const createUser = async (secret: string, data: UserMetadata) => {
+export const createUser = async (
+  secret: string,
+  data: UserMetadata,
+  options?: SaveOptions
+) => {
   data.password = crypto
     .createHmac("sha512", secret)
     .update(data.password)
     .digest("hex");
 
-  // check if the given acess level is valid
-  if (!validAcessLevels.includes(data.accessLevel)) {
-    return `Acess Level '${data.accessLevel}' is not valid, possibles are '${validAcessLevels}'`;
-  }
+  // // check if the given access level is valid
+  // if (!validaccessLevels.includes(data.accessLevel)) {
+  //   return `access Level '${data.accessLevel}' is not valid, possibles are '${validaccessLevels}'`;
+  // }
 
   // create object on DB
-  console.log("// create object on DB");
-  return await User.create(data);
+  return await User.create([data], options);
 };
 
 export const upateUser = async (id: any, upUser: HollowUserMetadata) =>
@@ -42,14 +45,14 @@ export const checkPassword = async ({
   password: string;
   userToCheck: HollowUserMetadata;
 }) => {
-  let user: Document<any> | null = null;
+  let user: any = null;
   if (!userToCheck.password) {
     if (!userToCheck._id && !userToCheck.nick) {
       throw new Error(
-        "userToCheck must have '_id' or 'nick' field if 'password' is not present"
+        "userToCheck must have 'id' or 'nick' field if 'password' is not present"
       );
     }
-    user = await findUser({ _id: userToCheck._id, nick: userToCheck.nick });
+    user = await findUser({ id: userToCheck._id, nick: userToCheck.nick });
     if (user) {
       userToCheck.password = (user as any).password;
     } else {
@@ -60,26 +63,35 @@ export const checkPassword = async ({
       .createHmac("sha512", secret)
       .update(password)
       .digest("hex");
+
     return { allowed: password == userToCheck.password, user: user };
   }
 };
 
-export const findUser = async ({
-  _id,
-  nick,
-}: {
-  _id?: string;
-  nick?: string;
-}) => {
-  if (!_id && !nick) {
+export const findUser = async (
+  { id, nick }: { id?: string; nick?: string },
+  options?: QueryOptions
+) => {
+  if (!id && !nick) {
     throw new Error("There must be the id or the nick to search an user");
   }
 
-  if (_id) {
-    return await User.findById({ id: _id });
+  if (id) {
+    return await User.findById({ id: id }, undefined, options);
   } else if (nick) {
-    return await User.findOne({ nick: nick });
+    return await User.findOne({ nick: nick }, undefined, options);
   } else {
     return null;
   }
+};
+
+export const deleteUser = async (
+  { id, nick }: { id?: string; nick?: string },
+  options?: QueryOptions
+) => {
+  if (!id && !nick) {
+    throw new Error("There must be the id or the nick to delete an user");
+  }
+
+  return await User.deleteOne({ id, nick }, options);
 };

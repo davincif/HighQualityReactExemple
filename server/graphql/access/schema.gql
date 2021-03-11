@@ -1,0 +1,10 @@
+type Access {
+  user: String!
+  level: LevelEnum!
+}
+
+enum LevelEnum {
+  OWNER
+  EDITOR
+  GUEST
+}
