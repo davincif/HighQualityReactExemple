@@ -116,13 +116,13 @@ export default {
     },
     users: async (parent: any, args: any, { req }: any) => {
       // request authentication
-      let owner = await protectRoute(req.nick);
+      await protectRoute(req.nick);
 
       return getAllUsers();
     },
     user: async (_: any, { nick }: any, { req }: any) => {
       // request authentication
-      let owner = await protectRoute(req.nick);
+      await protectRoute(req.nick);
 
       return findUser({ nick });
     },
@@ -171,7 +171,7 @@ export default {
     },
     updateUser: async (_: any, { id, data }: any, { req }: any) => {
       // request authentication
-      let owner = await protectRoute(req.nick);
+      await protectRoute(req.nick);
 
       return upateUser(id, data);
     },

@@ -1,15 +1,35 @@
 // Third Party Imports
-import { AuthenticationError, UserInputError } from "apollo-server-express";
 
 // Internal Imports
-import { findUser } from "../../mongoose/controller/user";
 import { FileMetadata, HollowFileMetadata } from "../../mongoose/types/file";
-import { createFile, rmFile } from "../../mongoose/controller/file";
+import {
+  createFile,
+  findFileByID,
+  rmFile,
+} from "../../mongoose/controller/file";
 import { protectRoute } from "../../mongoose/controller/utils";
+import { findDirectoryByID } from "../../mongoose/controller/directory";
+import { DirectoryMetadata } from "../../mongoose/types/direcotry";
 
 export default {
   Query: {
-    // code
+    getFilesInDirs: async (_: any, { dirIds }: any, { req }: any) => {
+      // request authentication
+      await protectRoute(req.nick, true);
+
+      // search for given directories
+      let dirs = await findDirectoryByID(dirIds);
+
+      // create file list to be obtained
+      let fileIDList = (dirs as DirectoryMetadata[])
+        .map((value) => value.files)
+        .flat(1);
+
+      // find all files
+      let fileList = await findFileByID(fileIDList);
+
+      return fileList;
+    },
   },
   Mutation: {
     touch: async (_: any, { name, where }: any, { req }: any) => {
@@ -40,12 +60,12 @@ export default {
 
       return newfile;
     },
-    rmFile: async (_: any, { id }: any, { req }: any) => {
+    rmFile: async (_: any, { fileId }: any, { req }: any) => {
       // request authentication
       let owner = await protectRoute(req.nick);
 
       // remove and get file removed
-      let file = await rmFile(id, owner._id, true);
+      let file = await rmFile(fileId, owner._id, true);
 
       // construct response obj
       let delfile: FileMetadata = {

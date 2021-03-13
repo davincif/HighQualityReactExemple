@@ -62,12 +62,19 @@ export const createFile = async (
 
 /**
  * Find a file by it's id.
- * @param id ID of the file to be found.
+ * @param id ID of the file to be found, or a list of it.
  * @param options mongoose options.
- * @returns Whatever was found or null.
+ * @returns Whatever was found or null, as a object if only a string was given, or as list if a list was given.
  */
-export const findFileByID = async (id: string, options?: QueryOptions) => {
-  return await File.findById(id, undefined, options);
+export const findFileByID = async (
+  id: string | string[],
+  options?: QueryOptions
+) => {
+  if (Array.isArray(id)) {
+    return await File.find({ _id: id }, undefined, options);
+  } else {
+    return await File.findById(id, undefined, options);
+  }
 };
 
 /**

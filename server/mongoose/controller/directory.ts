@@ -3,7 +3,7 @@ import { QueryOptions } from "mongoose";
 
 // Internal Imports
 import Directory from "../models/directory";
-import { DirectoryMetadata, HollowDirectoryMetadata } from "../types/direcotry";
+import { HollowDirectoryMetadata } from "../types/direcotry";
 import { touchItem } from "./utils";
 
 /**
@@ -63,10 +63,17 @@ export const createDirectory = async (
 
 /**
  * Find a directory by it's id.
- * @param id ID of the dir to be found.
+ * @param id ID of the dir to be found, or a list of it.
  * @param options mongoose options.
- * @returns Whatever was found or null.
+ * @returns Whatever was found or null, as a object if only a string was given, or as list if a list was given.
  */
-export const findDirectoryByID = async (id: string, options?: QueryOptions) => {
-  return await Directory.findById(id, undefined, options);
+export const findDirectoryByID = async (
+  id: string | string[],
+  options?: QueryOptions
+) => {
+  if (Array.isArray(id)) {
+    return await Directory.find({ _id: id }, undefined, options);
+  } else {
+    return await Directory.findById(id, undefined, options);
+  }
 };

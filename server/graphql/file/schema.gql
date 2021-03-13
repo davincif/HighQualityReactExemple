@@ -11,11 +11,11 @@ type File {
 }
 
 
-# type Query {
-
-# }
+type Query {
+  getFilesInDirs(dirIds: [String]!): [File]!
+}
 
 type Mutation {
   touch(name: String!, where: String!): File
-  rmFile(id: String!): File
+  rmFile(fileId: String!): File
 }

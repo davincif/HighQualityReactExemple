@@ -61,9 +61,10 @@ export const checkItemEditPerm = (
 /**
  * Throws if an user, for wathever reason, must not be allowed to access a protected route.
  * @param nick The nick of the user who's trying to access the route.
+ * @param allowGuest If guests are allowed to acess the rule protected by this function.
  * @returns the user's object in success case.
  */
-export const protectRoute = async (nick: string) => {
+export const protectRoute = async (nick: string, allowGuest = false) => {
   if (!nick) {
     throw new AuthenticationError("not loged");
   }
