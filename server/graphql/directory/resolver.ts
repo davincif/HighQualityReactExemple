@@ -2,11 +2,40 @@
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 
 // Internal Imports
-import { HollowDirectoryMetadata } from "../../mongoose/types/direcotry";
-import { createDirectory } from "../../mongoose/controller/directory";
+import {
+  DirectoryMetadata,
+  HollowDirectoryMetadata,
+} from "../../mongoose/types/direcotry";
+import {
+  createDirectory,
+  findDirectoryByID,
+} from "../../mongoose/controller/directory";
 import { protectRoute } from "../../mongoose/controller/utils";
+import { findFileByID } from "../../mongoose/controller/file";
 
 export default {
+  RecursiveDirectory: {
+    directories: async ({ directories }: any) => findDirectoryByID(directories),
+    files: async ({ files }: any) => findFileByID(files),
+  },
+  Query: {
+    getDirs: async (_: any, { ids }: any, { req }: any) => {
+      // request authentication
+      await protectRoute(req.nick);
+
+      let dirs: DirectoryMetadata = await findDirectoryByID(ids);
+
+      return dirs;
+    },
+    getRecursiveDirs: async (_: any, { ids }: any, { req }: any) => {
+      // request authentication
+      await protectRoute(req.nick);
+
+      let dirs: DirectoryMetadata = await findDirectoryByID(ids);
+
+      return dirs;
+    },
+  },
   Mutation: {
     mkdir: async (_: any, { name, where }: any, { req }: any) => {
       // request authentication

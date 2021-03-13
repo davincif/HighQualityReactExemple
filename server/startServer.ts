@@ -48,6 +48,7 @@ const startServer = ({ typeDefs, resolvers }: any) => {
 
       return { req, res };
     },
+    tracing: true,
     debug: true,
     playground: true,
   });
