@@ -5,9 +5,9 @@ type File {
   owner: String!
   createdAt: String!
   createdBy: String!
-  modifiedAt: String!
-  modifiedBy: String!
-  access: Access!
+  modifiedAt: String
+  modifiedBy: String
+  access: [Access]!
 }
 
 
@@ -15,6 +15,6 @@ type File {
 
 # }
 
-# type Mutation {
-
-# }
+type Mutation {
+  touch(name: String!, where: String!): File
+}

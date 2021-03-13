@@ -20,7 +20,7 @@ export default {
         throw new UserInputError(`${req.nick} is not a valid user`);
       }
 
-      // creating directory and constructing objecto to be responded
+      // creating directory and constructing object to be responded
       let dir: any = await createDirectory({
         name: name,
         father: where ? where : undefined,

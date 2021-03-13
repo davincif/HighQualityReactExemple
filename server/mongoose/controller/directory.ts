@@ -15,7 +15,7 @@ export const createDirectory = async (
   dir.createdBy = dir.createdBy ? dir.createdBy : dir.owner;
   creator = creator ? creator : dir.owner ? dir.owner : "";
   if (!creator && !dir.createdBy) {
-    throw new Error(`the Directory must have a creator or an onwer`);
+    throw new Error(`The Directory must have a creator or an onwer`);
   }
 
   // touch father item if there is one
@@ -29,7 +29,7 @@ export const createDirectory = async (
     }
 
     if (!touchItem(creator, father)) {
-      throw new Error("could not touch file, have you checked permissions?");
+      throw new Error("Could not touch file, have you checked permissions?");
     }
 
     // TODO: think about if we should implement this feature
