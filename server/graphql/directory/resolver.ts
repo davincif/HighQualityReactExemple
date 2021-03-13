@@ -4,28 +4,23 @@ import { AuthenticationError, UserInputError } from "apollo-server-express";
 // Internal Imports
 import { HollowDirectoryMetadata } from "../../mongoose/types/direcotry";
 import { createDirectory } from "../../mongoose/controller/directory";
-import { findUser } from "../../mongoose/controller/user";
+import { protectRoute } from "../../mongoose/controller/utils";
 
 export default {
   Mutation: {
     mkdir: async (_: any, { name, where }: any, { req }: any) => {
-      if (!req.nick) {
-        throw new AuthenticationError("not loged");
-      }
-
-      // check if owner exists and get it's ID
-      let owner: any = await findUser({ nick: req.nick });
-      if (!(owner && owner.active)) {
-        // the user doesn't exist or is inactive
-        throw new UserInputError(`${req.nick} is not a valid user`);
-      }
+      // request authentication
+      let owner = await protectRoute(req.nick);
 
       // creating directory and constructing object to be responded
-      let dir: any = await createDirectory({
-        name: name,
-        father: where ? where : undefined,
-        owner: owner._id,
-      });
+      let dir: any = await createDirectory(
+        {
+          name: name,
+          father: where ? where : undefined,
+          owner: owner._id,
+        },
+        true
+      );
 
       let newdir: HollowDirectoryMetadata = {
         _id: dir._id,

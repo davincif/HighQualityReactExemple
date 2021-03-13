@@ -17,4 +17,5 @@ type File {
 
 type Mutation {
   touch(name: String!, where: String!): File
+  rmFile(id: String!): File
 }

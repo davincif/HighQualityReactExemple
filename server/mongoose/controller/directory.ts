@@ -6,8 +6,17 @@ import Directory from "../models/directory";
 import { DirectoryMetadata, HollowDirectoryMetadata } from "../types/direcotry";
 import { touchItem } from "./utils";
 
+/**
+ * Creates a Directory.
+ * @param dir Directory to be added with the minimum information requeried for creation.
+ * @param checkPermission In case a permission check must be performed on who is removing the dir. Default: false.
+ * @param creator Id of who's creating the dir.
+ * @param options mongoose options.
+ * @returns Whatever was created of null.
+ */
 export const createDirectory = async (
   dir: HollowDirectoryMetadata,
+  checkPermission = false,
   creator?: string,
   options?: QueryOptions
 ) => {
@@ -28,7 +37,7 @@ export const createDirectory = async (
       );
     }
 
-    if (!touchItem(creator, father)) {
+    if (!touchItem(creator, father, checkPermission)) {
       throw new Error("Could not touch file, have you checked permissions?");
     }
 
@@ -52,6 +61,12 @@ export const createDirectory = async (
   return createdDir;
 };
 
+/**
+ * Find a directory by it's id.
+ * @param id ID of the dir to be found.
+ * @param options mongoose options.
+ * @returns Whatever was found or null.
+ */
 export const findDirectoryByID = async (id: string, options?: QueryOptions) => {
   return await Directory.findById(id, undefined, options);
 };

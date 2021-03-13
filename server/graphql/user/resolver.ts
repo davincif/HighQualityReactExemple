@@ -14,7 +14,7 @@ import {
   upateUser,
 } from "../../mongoose/controller/user";
 import { createDirectory } from "../../mongoose/controller/directory";
-import { dbconnection } from "../../mongoose/dbConnection";
+import { protectRoute } from "../../mongoose/controller/utils";
 
 // getting environment variables
 const SECRET = process.env.PASSWORD_SALT ? process.env.PASSWORD_SALT : "";
@@ -114,20 +114,17 @@ export default {
 
       return data.user;
     },
-    users: (parent: any, args: any, { req }: any) => {
-      if (!req.nick) {
-        throw new AuthenticationError("not loged");
-      }
+    users: async (parent: any, args: any, { req }: any) => {
+      // request authentication
+      let owner = await protectRoute(req.nick);
 
       return getAllUsers();
     },
-    user: (_: any, { nick }: any, { req }: any) => {
-      if (!req.nick) {
-        throw new AuthenticationError("not loged");
-      }
+    user: async (_: any, { nick }: any, { req }: any) => {
+      // request authentication
+      let owner = await protectRoute(req.nick);
 
       return findUser({ nick });
-      // User.findById(id);
     },
   },
   Mutation: {
@@ -172,10 +169,9 @@ export default {
       // session.endSession();
       return user;
     },
-    updateUser: (_: any, { id, data }: any, { req }: any) => {
-      if (!req.nick) {
-        throw new AuthenticationError("not loged");
-      }
+    updateUser: async (_: any, { id, data }: any, { req }: any) => {
+      // request authentication
+      let owner = await protectRoute(req.nick);
 
       return upateUser(id, data);
     },

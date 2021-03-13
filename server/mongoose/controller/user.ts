@@ -14,6 +14,13 @@ import {
 
 export const getAllUsers = () => User.find();
 
+/**
+ * Creates an user.
+ * @param secret Secret to encode password.
+ * @param data The user's data to be created.
+ * @param options mongoose save options.
+ * @returns Whatever was created of null.
+ */
 export const createUser = async (
   secret: string,
   data: UserMetadata,
@@ -33,9 +40,22 @@ export const createUser = async (
   return await User.create([data], options);
 };
 
+/**
+ * Updates an user.
+ * @param id ID of the user to be found.
+ * @param upUser The user's data to be updated.
+ * @returns The updated user or null if it was not found.
+ */
 export const upateUser = async (id: any, upUser: HollowUserMetadata) =>
   User.findOneAndUpdate(id, upUser, { new: true });
 
+/**
+ * Check if the given password matches with the given user's password.
+ * @param secret Secret to encode password.
+ * @param password User's password.
+ * @param userToCheck The user to be check.
+ * @returns True or false whether if the password matches or not.
+ */
 export const checkPassword = async ({
   secret,
   password,
@@ -68,6 +88,13 @@ export const checkPassword = async ({
   }
 };
 
+/**
+ * Find an user by it's id or nick.
+ * @param nick The user's nick. Either this or 'id' must be present.
+ * @param id The user's id. Either this or 'nick' must be present.
+ * @param options mongoose options
+ * @returns the user, or null if not found.
+ */
 export const findUser = async (
   { id, nick }: { id?: string; nick?: string },
   options?: QueryOptions
@@ -85,6 +112,13 @@ export const findUser = async (
   }
 };
 
+/**
+ * Deletes an user.
+ * @param nick The user's nick. Either this or 'id' must be present.
+ * @param id The user's id. Either this or 'nick' must be present.
+ * @param options mongoose options
+ * @returns whatever was deleted, or undefined
+ */
 export const deleteUser = async (
   { id, nick }: { id?: string; nick?: string },
   options?: QueryOptions

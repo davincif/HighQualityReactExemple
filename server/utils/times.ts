@@ -8,18 +8,31 @@ const standardZone = process.env.STANDARD_TIMEZONE
   ? process.env.STANDARD_TIMEZONE
   : timeZone;
 
+/**
+ * The right now date and time on the defined standard timeZone.
+ */
 export const timeNow = () => {
   let date = new Date();
 
   return serverTimeToStandardZone(date);
 };
 
+/**
+ * Convertes the given date (usually the server's) into the defined as standard TimeZone.
+ * @param date The date to be converted.
+ */
 export const serverTimeToStandardZone = (date: Date) => {
   let utctime = zonedTimeToUtc(date, timeZone);
 
   return utcToZonedTime(utctime, standardZone);
 };
 
+/**
+ * Formats the given data into a human readable string.
+ * @param date The date to be converted.
+ * @param noTime If the time shall appear in the string. Default: false.
+ * @param timezone If the Timezone GMT shall appear in the string. Default: true.
+ */
 export const standardFormat = (date: Date, noTime = false, timezone = true) => {
   let localPattern = noTime ? patternNoTime : pattern;
   localPattern = timezone ? localPattern + timezonePatter : localPattern;
@@ -27,6 +40,12 @@ export const standardFormat = (date: Date, noTime = false, timezone = true) => {
   return format(date, localPattern);
 };
 
+/**
+ * Converts an human readable date string into a date object.
+ * @param date Date string to be loaded.
+ * @param onlyDate if only the date shall be converted back to date.
+ * @PS #TODO: This function is still incapable of converting the GMT.
+ */
 export const loadFormatedDate = (date: string, onlyDate = true) => {
   let [dt, tm]: any = date.split(" ");
 
