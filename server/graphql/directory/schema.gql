@@ -34,4 +34,5 @@ type Query {
 
 type Mutation {
   mkdir(name: String!, where: String!): Directory
+  rmDir(id: String!): Directory
 }

@@ -9,6 +9,7 @@ import {
 import {
   createDirectory,
   findDirectoryByID,
+  rmDir,
 } from "../../mongoose/controller/directory";
 import { protectRoute } from "../../mongoose/controller/utils";
 import { findFileByID } from "../../mongoose/controller/file";
@@ -66,6 +67,14 @@ export default {
       };
 
       return newdir;
+    },
+    rmDir: async (_: any, { id }: any, { req }: any) => {
+      // request authentication
+      let owner = await protectRoute(req.nick);
+
+      let dirs = await rmDir(id, owner._id);
+
+      return dirs;
     },
   },
 };

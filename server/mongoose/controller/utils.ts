@@ -12,7 +12,7 @@ import { findUser } from "./user";
  * Update the information about last modification in the file, checking if the requested user has permission to do so.
  * @param who The id of the user who is modifying the item.
  * @param item The item being modifying.
- * @param checkPermission Ignore the permission check, default false.
+ * @param checkPermission Perform a permission check, default false.
  * @returns true or false weather the operations worked or not.
  */
 export const touchItem = (
@@ -36,7 +36,7 @@ export const touchItem = (
  * Check Item Edit Permission.
  * @param who The id of the user who must have edit permission.
  * @param item The item being modifying.
- * @returns true or false weather this user has or not the edit permissions.
+ * @returns true if the user has edit permissions, false otherwise.
  */
 export const checkItemEditPerm = (
   who: string,
@@ -77,4 +77,15 @@ export const protectRoute = async (nick: string, allowGuest = false) => {
   }
 
   return owner;
+};
+
+/**
+ * Remove all duplicated entries from a Array
+ * @param vect Vector to be converted.
+ * @return A new vector with unique entries.
+ */
+export const removeDuplicated = (vect: any[]): any[] => {
+  const set = new Set(vect);
+
+  return [...set];
 };

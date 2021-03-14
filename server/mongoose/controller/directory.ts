@@ -3,8 +3,9 @@ import { QueryOptions } from "mongoose";
 
 // Internal Imports
 import Directory from "../models/directory";
-import { HollowDirectoryMetadata } from "../types/direcotry";
-import { touchItem } from "./utils";
+import { DirectoryMetadata, HollowDirectoryMetadata } from "../types/direcotry";
+import { rmFiles } from "./file";
+import { checkItemEditPerm, touchItem } from "./utils";
 
 /**
  * Creates a Directory.
@@ -33,7 +34,7 @@ export const createDirectory = async (
     father = await findDirectoryByID(dir.father, options);
     if (!father) {
       throw new Error(
-        `Father ${dir.father} in ${dir.name} from ${creator} was not found. This should not be happening`
+        `Father ${dir.father} in ${dir.name} from ${creator} was not found. This should not be happening.`
       );
     }
 
@@ -76,4 +77,57 @@ export const findDirectoryByID = async (
   } else {
     return await Directory.findById(id, undefined, options);
   }
+};
+
+// TODO: This function was supposed to return the all removed items.
+/**
+ * Recursively remove all file tree inside the given directory, including itself.
+ * @param id ID of the dir to be found, or a list of it.
+ * @param who ID of who us making the change.
+ * @param checkPermission In case a permission check must be performed on who is removing the dir. Default: false.
+ * @param options Mongoose options.
+ * @param touch If the file's father shall be touched or not. Default true.
+ * @returns
+ */
+export const rmDir = async (
+  id: string,
+  who: string,
+  checkPermission = false,
+  options?: QueryOptions,
+  touch = true
+) => {
+  let dir: DirectoryMetadata = await findDirectoryByID(id);
+
+  // touch father if there's one
+  let father: DirectoryMetadata;
+  if (touch && dir.father) {
+    father = await findDirectoryByID(dir.father, options);
+    if (!father) {
+      throw new Error(
+        `Father ${dir.father} in ${dir.name} was not found. This should not be happening.`
+      );
+    }
+
+    if (!touchItem(who, father)) {
+      throw new Error("Could not touch file, have you checked permissions?");
+    }
+  }
+
+  // check permission
+  if (checkPermission && !checkItemEditPerm(who, dir)) {
+    throw new Error("Could not remove file, have you checked permissions?");
+  }
+
+  // delete directories' files
+  dir.files = rmFiles(dir.files, who, false, options) as any;
+
+  // recursively delete the inner directories
+  dir.directories = dir.directories.map((value) =>
+    rmDir(value, who, false, options, false)
+  ) as any;
+
+  // delete current directory
+  await (dir as any).remove(options);
+
+  return dir;
 };

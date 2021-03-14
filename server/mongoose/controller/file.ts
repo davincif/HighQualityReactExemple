@@ -4,9 +4,9 @@ import { QueryOptions } from "mongoose";
 // Internal Imports
 import File from "../models/files";
 import { DirectoryMetadata } from "../types/direcotry";
-import { HollowFileMetadata } from "../types/file";
+import { FileMetadata, HollowFileMetadata } from "../types/file";
 import { findDirectoryByID } from "./directory";
-import { touchItem } from "./utils";
+import { removeDuplicated, touchItem } from "./utils";
 
 /**
  * Creates a File.
@@ -119,4 +119,43 @@ export const rmFile = async (
   await file.remove(options);
 
   return file;
+};
+
+export const rmFiles = async (
+  id: string[],
+  who: string,
+  checkPermission = false,
+  options?: QueryOptions
+) => {
+  // query all files
+  let files: FileMetadata[] = await findFileByID(id, options);
+  if (!files || files.length <= 0) {
+    throw new Error(`file ${id} not found`);
+  }
+
+  // query all fathers involved
+  let fathersToQuery = removeDuplicated(files.map((value) => value.father));
+  let fathers: DirectoryMetadata[] = await findDirectoryByID(fathersToQuery);
+
+  // touch all fathers
+  for (let father of fathers) {
+    if (!touchItem(who, father, checkPermission)) {
+      throw new Error("Could not touch file, have you checked permissions?");
+    }
+  }
+
+  // remove file from all fathers' list
+  for (let father of fathers) {
+    father.files = (father as DirectoryMetadata).files.filter(
+      (item) => `${item}` !== `${id}`
+    );
+  }
+  let promises = fathers.map((value) => (value as any).save());
+  await Promise.all(promises);
+
+  // remove file
+  promises = files.map((value) => (value as any).remove(options));
+  await Promise.all(promises);
+
+  return files;
 };
