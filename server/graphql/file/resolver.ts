@@ -7,7 +7,7 @@ import {
   findFileByID,
   rmFile,
 } from "../../mongoose/controller/file";
-import { protectRoute } from "../../mongoose/controller/utils";
+import { protectRoute } from "../../utils/controller";
 import { findDirectoryByID } from "../../mongoose/controller/directory";
 import { DirectoryMetadata } from "../../mongoose/types/direcotry";
 

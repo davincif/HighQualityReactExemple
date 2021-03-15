@@ -1,8 +1,8 @@
 import { format, utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
 
-const pattern = "d/MM/yyyy HH:mm:ss.SSS";
-const patternNoTime = "d/MM/yyyy";
-const timezonePatter = " OOO";
+const datePattern = "dd/MM/yyyy";
+const timePattern = "HH:mm:ss.SSS";
+const zonePattern = "OOO";
 const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const standardZone = process.env.STANDARD_TIMEZONE
   ? process.env.STANDARD_TIMEZONE
@@ -30,12 +30,14 @@ export const serverTimeToStandardZone = (date: Date) => {
 /**
  * Formats the given data into a human readable string.
  * @param date The date to be converted.
- * @param noTime If the time shall appear in the string. Default: false.
+ * @param time If the time shall appear in the string. Default: true.
  * @param timezone If the Timezone GMT shall appear in the string. Default: true.
  */
-export const standardFormat = (date: Date, noTime = false, timezone = true) => {
-  let localPattern = noTime ? patternNoTime : pattern;
-  localPattern = timezone ? localPattern + timezonePatter : localPattern;
+export const standardFormat = (date: Date, time = true, timezone = true) => {
+  let localPattern =
+    datePattern +
+    (time ? ` ${timePattern}` : "") +
+    (timezone ? ` ${zonePattern}` : "");
 
   return format(date, localPattern);
 };
@@ -43,10 +45,10 @@ export const standardFormat = (date: Date, noTime = false, timezone = true) => {
 /**
  * Converts an human readable date string into a date object.
  * @param date Date string to be loaded.
- * @param onlyDate if only the date shall be converted back to date.
+ * @param onlyDate If only the date shall be converted back to date. Default: false.
  * @PS #TODO: This function is still incapable of converting the GMT.
  */
-export const loadFormatedDate = (date: string, onlyDate = true) => {
+export const loadFormatedDate = (date: string, onlyDate = false) => {
   let [dt, tm]: any = date.split(" ");
 
   dt = dt.split("/");

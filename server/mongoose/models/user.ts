@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 // Local Imports
-import { timeNow, standardFormat } from "../../utils/times";
+import { timeNow } from "../../utils/times";
 
 const UserSchema = new Schema({
   nick: {
@@ -26,13 +26,13 @@ const UserSchema = new Schema({
     unique: true,
   },
   birth: {
-    type: String,
+    type: Date,
     required: [true, "Field birth is required"],
   },
   createdAt: {
-    type: String,
+    type: Date,
     required: [true, "Field createdAt is required"],
-    default: () => standardFormat(timeNow(), false),
+    default: () => timeNow(),
   },
   active: {
     type: Boolean,

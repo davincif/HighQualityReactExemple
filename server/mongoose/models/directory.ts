@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 // Internal Imports
 import { validaccessLevels } from "../types/permissions";
-import { standardFormat, timeNow } from "../../utils/times";
+import { timeNow } from "../../utils/times";
 
 const { Schema } = mongoose;
 
@@ -42,9 +42,9 @@ const DirectorySchema = new Schema({
     required: [true, "Field owner is required"],
   },
   createdAt: {
-    type: String,
+    type: Date,
     required: [true, "Field createdAt is required"],
-    default: () => standardFormat(timeNow()),
+    default: () => timeNow(),
   },
   createdBy: {
     type: Schema.Types.ObjectId,
@@ -52,7 +52,7 @@ const DirectorySchema = new Schema({
     required: [true, "Fied createdBy is required in access"],
   },
   modifiedAt: {
-    type: String,
+    type: Date,
   },
   modifiedBy: {
     type: Schema.Types.ObjectId,

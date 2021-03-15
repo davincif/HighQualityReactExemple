@@ -5,7 +5,7 @@ import { QueryOptions } from "mongoose";
 import Directory from "../models/directory";
 import { DirectoryMetadata, HollowDirectoryMetadata } from "../types/direcotry";
 import { rmFiles } from "./file";
-import { checkItemEditPerm, touchItem } from "./utils";
+import { checkItemEditPerm, touchItem } from "../../utils/controller";
 
 /**
  * Creates a Directory.

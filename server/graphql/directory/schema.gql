@@ -5,9 +5,9 @@ type Directory {
   directories: [String]!
   files: [String]!
   owner: String!
-  createdAt: String!
+  createdAt: DateTime!
   createdBy: String!
-  modifiedAt: String
+  modifiedAt: DateTime
   modifiedBy: String
   access: [Access]!
 }
@@ -19,9 +19,9 @@ type RecursiveDirectory {
   directories: [RecursiveDirectory]!
   files: [File]!
   owner: String!
-  createdAt: String!
+  createdAt: DateTime!
   createdBy: String!
-  modifiedAt: String
+  modifiedAt: DateTime
   modifiedBy: String
   access: [Access]!
 }

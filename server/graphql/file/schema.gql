@@ -3,9 +3,9 @@ type File {
   name: String!
   father: String!
   owner: String!
-  createdAt: String!
+  createdAt: DateTime!
   createdBy: String!
-  modifiedAt: String
+  modifiedAt: DateTime
   modifiedBy: String
   access: [Access]!
 }

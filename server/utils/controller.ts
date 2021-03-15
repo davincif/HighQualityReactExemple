@@ -2,11 +2,11 @@
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 
 // Internal Imports
-import { standardFormat, timeNow } from "../../utils/times";
-import { HollowDirectoryMetadata } from "../types/direcotry";
-import { HollowFileMetadata } from "../types/file";
-import { validaccessLevels } from "../types/permissions";
-import { findUser } from "./user";
+import { timeNow } from "./times";
+import { HollowDirectoryMetadata } from "../mongoose/types/direcotry";
+import { HollowFileMetadata } from "../mongoose/types/file";
+import { validaccessLevels } from "../mongoose/types/permissions";
+import { findUser } from "../mongoose/controller/user";
 
 /**
  * Update the information about last modification in the file, checking if the requested user has permission to do so.
@@ -26,7 +26,7 @@ export const touchItem = (
   }
 
   // touching
-  item.modifiedAt = standardFormat(timeNow());
+  item.modifiedAt = timeNow();
   item.modifiedBy = who;
 
   return true;

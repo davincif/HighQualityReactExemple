@@ -11,7 +11,7 @@ import {
   findDirectoryByID,
   rmDir,
 } from "../../mongoose/controller/directory";
-import { protectRoute } from "../../mongoose/controller/utils";
+import { protectRoute } from "../../utils/controller";
 import { findFileByID } from "../../mongoose/controller/file";
 
 export default {

@@ -6,7 +6,7 @@ import File from "../models/files";
 import { DirectoryMetadata } from "../types/direcotry";
 import { FileMetadata, HollowFileMetadata } from "../types/file";
 import { findDirectoryByID } from "./directory";
-import { removeDuplicated, touchItem } from "./utils";
+import { removeDuplicated, touchItem } from "../../utils/controller";
 
 /**
  * Creates a File.

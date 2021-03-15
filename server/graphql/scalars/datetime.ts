@@ -6,7 +6,7 @@ import { GraphQLScalarType } from "graphql";
 // Internal imports
 import { loadFormatedDate, standardFormat } from "../../utils/times";
 
-export const dateScalar = new GraphQLScalarType({
+export const dateTimeScalar = new GraphQLScalarType({
   name: "Date",
   description: "Date custom scalar type",
   serialize(value: Date) {
@@ -21,9 +21,9 @@ export const dateScalar = new GraphQLScalarType({
       throw new Error("Date is invalid.");
     }
 
-    return standardFormat(value, false, false);
+    return standardFormat(value);
   },
   parseValue(value) {
-    return loadFormatedDate(value, true);
+    return loadFormatedDate(value);
   },
 });

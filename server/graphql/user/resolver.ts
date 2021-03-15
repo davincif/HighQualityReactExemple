@@ -5,6 +5,7 @@ import { sign } from "jsonwebtoken";
 
 // Internal Imports
 import { dateScalar } from "../scalars/date";
+import { dateTimeScalar } from "../scalars/datetime";
 import {
   checkPassword,
   createUser,
@@ -14,7 +15,7 @@ import {
   upateUser,
 } from "../../mongoose/controller/user";
 import { createDirectory } from "../../mongoose/controller/directory";
-import { protectRoute } from "../../mongoose/controller/utils";
+import { protectRoute } from "../../utils/controller";
 
 // getting environment variables
 const SECRET = process.env.PASSWORD_SALT ? process.env.PASSWORD_SALT : "";
@@ -36,6 +37,7 @@ const JWT_ALGORITHM: any = process.env.JWT_ALGORITHM
 
 export default {
   Date: dateScalar,
+  DateTime: dateTimeScalar,
   Query: {
     login: async (_: any, { nick, password }: any, { res }: any) => {
       const now = new Date();

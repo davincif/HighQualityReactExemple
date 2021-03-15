@@ -7,9 +7,9 @@ export type DirectoryMetadata = {
   directories: string[];
   files: string[];
   owner: string;
-  createdAt: string;
+  createdAt: Date;
   createdBy: string;
-  modifiedAt: string;
+  modifiedAt: Date;
   modifiedBy: string;
   access: {
     user: string;
@@ -24,9 +24,9 @@ export type HollowDirectoryMetadata = {
   directories?: string[];
   files?: string[];
   owner?: string;
-  createdAt?: string;
+  createdAt?: Date;
   createdBy?: string;
-  modifiedAt?: string;
+  modifiedAt?: Date;
   modifiedBy?: string;
   access?: {
     user: string;
