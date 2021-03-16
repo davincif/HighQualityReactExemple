@@ -5,7 +5,7 @@ import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { timeNow } from "./times";
 import { HollowDirectoryMetadata } from "../mongoose/types/direcotry";
 import { HollowFileMetadata } from "../mongoose/types/file";
-import { validaccessLevels } from "../mongoose/types/permissions";
+import { AccessLevel, validaccessLevels } from "../mongoose/types/permissions";
 import { findUser } from "../mongoose/controller/user";
 
 /**
@@ -18,7 +18,7 @@ import { findUser } from "../mongoose/controller/user";
 export const touchItem = (
   who: string,
   item: HollowDirectoryMetadata | HollowFileMetadata,
-  checkPermission?: boolean
+  checkPermission = false
 ) => {
   // checking for permission
   if (checkPermission && !checkItemEditPerm(who, item)) {
@@ -36,17 +36,19 @@ export const touchItem = (
  * Check Item Edit Permission.
  * @param who The id of the user who must have edit permission.
  * @param item The item being modifying.
+ * @param leastPermission The lesser access level required. Default is "EDITOR".
  * @returns true if the user has edit permissions, false otherwise.
  */
 export const checkItemEditPerm = (
   who: string,
-  item: HollowDirectoryMetadata | HollowFileMetadata
+  item: HollowDirectoryMetadata | HollowFileMetadata,
+  leastPermission: AccessLevel = "EDITOR"
 ) => {
   if (who && `${who}` != `${item.owner}`) {
+    let lastPermIdx = validaccessLevels.indexOf(leastPermission);
+    let allowedLevels = validaccessLevels.splice(0, lastPermIdx + 1);
     let found = item.access?.filter(
-      (value) =>
-        value.user == who &&
-        validaccessLevels.splice(0, -1).includes(value.accessLevel)
+      (value) => value.user == who && allowedLevels.includes(value.accessLevel)
     );
 
     if (found && found.length <= 0) {
@@ -77,15 +79,4 @@ export const protectRoute = async (nick: string, allowGuest = false) => {
   }
 
   return owner;
-};
-
-/**
- * Remove all duplicated entries from a Array
- * @param vect Vector to be converted.
- * @return A new vector with unique entries.
- */
-export const removeDuplicated = (vect: any[]): any[] => {
-  const set = new Set(vect);
-
-  return [...set];
 };

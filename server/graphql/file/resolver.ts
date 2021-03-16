@@ -6,14 +6,26 @@ import {
   createFile,
   findFileByID,
   rmFile,
+  updateFile,
 } from "../../mongoose/controller/file";
-import { protectRoute } from "../../utils/controller";
+import { checkItemEditPerm, protectRoute } from "../../utils/controller";
 import { findDirectoryByID } from "../../mongoose/controller/directory";
 import { DirectoryMetadata } from "../../mongoose/types/direcotry";
+import { ForbiddenError } from "apollo-server-express";
+import { removeItemOnce } from "../../utils/utils";
 
 export default {
   Query: {
-    getFilesInDirs: async (_: any, { dirIds }: any, { req }: any) => {
+    files: async (_: any, { ids }: any, { req }: any) => {
+      // request authentication
+      await protectRoute(req.nick, true);
+
+      // find all files
+      let files: FileMetadata = await findFileByID(ids);
+
+      return files;
+    },
+    filesInDirs: async (_: any, { dirIds }: any, { req }: any) => {
       // request authentication
       await protectRoute(req.nick, true);
 
@@ -81,6 +93,150 @@ export default {
       };
 
       return delfile;
+    },
+    changeFileName: async (_: any, { id, name }: any, { req }: any) => {
+      // request authentication
+      let user = await protectRoute(req.nick);
+
+      let file: FileMetadata = await findFileByID(id);
+      if (!file) {
+        throw new Error(`The file "${id}" was not found.`);
+      }
+
+      // check permissions
+      if (!checkItemEditPerm(user._id, file)) {
+        throw new ForbiddenError("Not Allowed, check your permissions.");
+      }
+
+      // update
+      return await updateFile({ id, who: user._id, newfile: { name }, file });
+    },
+    changeFileFather: async (_: any, { id, newFather }: any, { req }: any) => {
+      // request authentication
+      let user = await protectRoute(req.nick);
+
+      let file: FileMetadata = await findFileByID(id);
+      if (!file) {
+        throw new Error(`The directory "${id}" was not found.`);
+      }
+
+      // check permissions
+      if (!checkItemEditPerm(user._id, file, "MANAGER")) {
+        throw new ForbiddenError(
+          "Not Allowed, You need to be Manager of a file to move it."
+        );
+      }
+
+      // update
+      return await updateFile({
+        id,
+        who: user._id,
+        newfile: { father: newFather },
+        checkPermission: true,
+        file,
+        touchFile: true,
+        touchFather: true,
+        touchDestinationFather: true,
+      });
+    },
+    changeFileOwnership: async (
+      _: any,
+      { id, newOwner }: any,
+      { req }: any
+    ) => {
+      // request authentication
+      let user = await protectRoute(req.nick);
+
+      let file: FileMetadata = await findFileByID(id);
+      if (!file) {
+        throw new Error(`The file "${id}" was not found.`);
+      }
+
+      // check permissions
+      if (!checkItemEditPerm(user._id, id, "OWNER")) {
+        throw new ForbiddenError("Not Allowed, check your permissions.");
+      }
+
+      // update
+      return await updateFile({
+        id,
+        who: user._id,
+        newfile: { owner: newOwner },
+        file,
+      });
+    },
+    giveFileAccess: async (
+      _: any,
+      { id, who, newAccess }: any,
+      { req }: any
+    ) => {
+      // check entries
+      if (newAccess === "OWNER") {
+        throw new Error(
+          `Connot give owner access, there can be only one owner.`
+        );
+      }
+
+      // request authentication
+      let user = await protectRoute(req.nick);
+
+      let file: FileMetadata = await findFileByID(id);
+      if (!file) {
+        throw new Error(`The file "${id}" was not found.`);
+      }
+
+      // check permissions
+      if (!checkItemEditPerm(user._id, file, "MANAGER")) {
+        throw new ForbiddenError("Not Allowed, check your permissions.");
+      }
+
+      // add access
+      let found = false;
+      for (let acs of file.access) {
+        if (acs.user === who) {
+          if (acs.accessLevel !== newAccess) {
+            acs.accessLevel = newAccess;
+          }
+          break;
+        }
+      }
+
+      if (!found) {
+        file.access.push({ user: who, accessLevel: newAccess });
+      }
+
+      await (file as any).save();
+      return file;
+    },
+    removeFileAccess: async (_: any, { id, who }: any, { req }: any) => {
+      // request authentication
+      let user = await protectRoute(req.nick);
+
+      let file: FileMetadata = await findFileByID(id);
+      if (!file) {
+        throw new Error(`The File "${id}" was not found.`);
+      }
+
+      // check permissions
+      if (!checkItemEditPerm(user._id, file, "MANAGER")) {
+        throw new ForbiddenError("Not Allowed, check your permissions.");
+      }
+
+      // rm access
+      let index = -1;
+      for (let idx in file.access) {
+        if (file.access[idx].user === who) {
+          index = Number(idx);
+          break;
+        }
+      }
+
+      if (index !== -1) {
+        removeItemOnce(file.access, { index });
+      }
+
+      await (file as any).save();
+      return file;
     },
   },
 };

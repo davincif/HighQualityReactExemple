@@ -5,6 +5,7 @@ type Access {
 
 enum LevelEnum {
   OWNER
+  MANAGER
   EDITOR
   GUEST
 }

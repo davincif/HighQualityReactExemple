@@ -28,11 +28,16 @@ type RecursiveDirectory {
 
 
 type Query {
-  getDirs(ids: [String]!): [Directory]!
-  getRecursiveDirs(ids: [String]!): [RecursiveDirectory]!
+  directories(ids: [String]!): [Directory]!
+  recursiveDirectories(ids: [String]!): [RecursiveDirectory]!
 }
 
 type Mutation {
   mkdir(name: String!, where: String!): Directory
   rmDir(id: String!): Directory
+  changeDirName(id: String!, name: String!): Directory!
+  changeDirFather(id: String!, newFather: String!): Directory!
+  changeDirOwnership(id: String!, newOwner: String!): Directory!
+  giveDirAccess(id: String!, who: String!, newAccess: LevelEnum): Directory!
+  removeDirAccess(id: String!, who: String!): Directory!
 }

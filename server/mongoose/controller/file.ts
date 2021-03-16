@@ -6,7 +6,8 @@ import File from "../models/files";
 import { DirectoryMetadata } from "../types/direcotry";
 import { FileMetadata, HollowFileMetadata } from "../types/file";
 import { findDirectoryByID } from "./directory";
-import { removeDuplicated, touchItem } from "../../utils/controller";
+import { touchItem } from "../../utils/controller";
+import { removeDuplicated, removeItemOnce } from "../../utils/utils";
 
 /**
  * Creates a File.
@@ -78,11 +79,11 @@ export const findFileByID = async (
 };
 
 /**
- * Telete the requested file in the name.
+ * Perform a deletion of the requested file in name of 'who'.
  * @param id Id of the file to be removed.
- * @param who In case a permission check must be performed.
+ * @param who Who is performing this action.
  * @param checkPermission In case a permission check must be performed on who is removing the file. Default: false.
- * @param options mongoose options
+ * @param options mongoose options.
  * @returns whatever was removed, or undefined
  */
 export const rmFile = async (
@@ -121,6 +122,14 @@ export const rmFile = async (
   return file;
 };
 
+/**
+ * Perform a deletion of the requested files in name of 'who'.
+ * @param id Lis of IDs of the file to be removed.
+ * @param who Who is performing this action.
+ * @param checkPermission In case a permission check must be performed on who is removing the file. Default: false.
+ * @param options mongoose options.
+ * @returns whatever was removed, or undefined
+ */
 export const rmFiles = async (
   id: string[],
   who: string,
@@ -158,4 +167,191 @@ export const rmFiles = async (
   await Promise.all(promises);
 
   return files;
+};
+
+/**
+ * Update the choosen directory with the given informations
+ * @WARNING Does not check special permission, only searching for basic edit permission.
+ * @param id ID of the dir to be found, or a list of it.
+ * @param who ID of who us making the change.
+ * @param newdir The information of the directory to be updated
+ * @param checkPermission In case a permission check must be performed on who is removing the file. Default: false.
+ * @param dir The directory to be updated. The Default behavir is this funciton to make this query based on the 'id'.
+ * @param options Mongoose options.
+ * @param touchDir If the current directory shall be touched or not. Default false.
+ * @param touchFather If the dir's father shall be touched or not. Default false.
+ * @returns The updated directory after writing to the DB.
+ */
+export const updateFile = async ({
+  id = "",
+  who = "",
+  newfile,
+  checkPermission = false,
+  file,
+  touchFile = false,
+  options,
+  touchFather = false,
+  touchDestinationFather = false,
+}: {
+  id: string;
+  who: string;
+  newfile: HollowFileMetadata;
+  checkPermission?: boolean;
+  file?: FileMetadata;
+  touchFile?: boolean;
+  options?: QueryOptions;
+  touchFather?: boolean;
+  touchDestinationFather?: boolean;
+}) => {
+  // treating entries
+  if (touchDestinationFather && !newfile.father) {
+    throw new Error(
+      `There's no destination father but 'touchDestinationFather' is true.`
+    );
+  }
+
+  // find and touch current directory if needed
+  if (!file) {
+    file = await findFileByID(id, options);
+    if (!file) {
+      throw new Error(`The directory "${id}" was not found.`);
+    }
+  }
+
+  if (touchFile) {
+    if (!touchItem(who, file, checkPermission)) {
+      throw new Error("Could not touch file, have you checked permissions?");
+    }
+  }
+
+  // find and touch father if there's one
+  let father: DirectoryMetadata | undefined = undefined;
+  if (touchFather && file.father) {
+    father = await findDirectoryByID(file.father, options);
+    if (!father) {
+      throw new Error(
+        `Father ${file.father} in ${file.name} was not found. This should not be happening.`
+      );
+    }
+
+    if (!touchItem(who, father, checkPermission)) {
+      throw new Error("Could not touch file, have you checked permissions?");
+    }
+  }
+
+  // find and touch destination father, is needed
+  let destFather: DirectoryMetadata | undefined = undefined;
+  if (touchDestinationFather) {
+    destFather = await findDirectoryByID(
+      (newfile as FileMetadata).father,
+      options
+    );
+    if (!destFather) {
+      throw new Error(
+        `Destination father ${newfile.father} in ${newfile.name} was not found. This should not be happening.`
+      );
+    }
+
+    if (!touchItem(who, destFather, checkPermission)) {
+      throw new Error("Could not touch file, have you checked permissions?");
+    }
+  }
+
+  // updating info
+  file.name = newfile.name ? newfile.name : file.name;
+  // father
+  if (newfile.father && file.father != newfile.father) {
+    moveFile(
+      file,
+      destFather ? destFather : (newfile.father as string),
+      father,
+      options
+    );
+  }
+  file.owner = newfile.owner ? newfile.owner : file.owner;
+
+  // check access array
+  let isEqual = false;
+  if (
+    newfile.access &&
+    file.access.length > 0 &&
+    newfile.access.length > 0 &&
+    file.access.length === newfile.access.length
+  ) {
+    for (let index = 0; index < newfile.access.length; index++) {
+      if (
+        newfile.access[index].accessLevel == file.access[index].accessLevel &&
+        newfile.access[index].user == file.access[index].user
+      ) {
+        isEqual = false;
+        break;
+      }
+    }
+  }
+
+  if (!isEqual && newfile.access) {
+    file.access = newfile.access;
+  }
+
+  // update
+  (file as any).save();
+  if (father) {
+    (father as any).save();
+  }
+  if (destFather) {
+    (destFather as any).save();
+  }
+
+  return file as any;
+};
+
+/**
+ * Move 'whatToChange' from 'dirTo' to 'dirFrom'.
+ * @param whatToChange Id or Object of the file whos is being moved.
+ * @param dirTo Id or Object of the directory where the item is being moved to.
+ * @param dirFrom Id or Object of the directory where the item is being moved from. (can be inferred by 'whatToChange.father')
+ * @param options Mongoose options.
+ */
+const moveFile = async (
+  whatToChange: FileMetadata | string,
+  dirTo: DirectoryMetadata | string,
+  dirFrom?: DirectoryMetadata | string,
+  options?: QueryOptions
+) => {
+  // search for file if needed
+  if (typeof whatToChange === "string") {
+    var toChange: FileMetadata = await findFileByID(whatToChange, options);
+    if (!whatToChange) {
+      throw new Error(`Could find directory ${whatToChange}`);
+    }
+  } else {
+    var toChange = whatToChange;
+  }
+
+  if (typeof dirTo === "string") {
+    var toDir: DirectoryMetadata = await findDirectoryByID(dirTo, options);
+    if (!dirTo) {
+      throw new Error(`Could find directory ${dirTo}`);
+    }
+  } else {
+    var toDir = dirTo;
+  }
+
+  if (!dirFrom || typeof dirFrom === "string") {
+    var formDir: DirectoryMetadata = await findDirectoryByID(
+      dirFrom ? dirFrom : toChange.father,
+      options
+    );
+    if (!dirFrom) {
+      throw new Error(`Could find directory ${dirFrom}`);
+    }
+  } else {
+    var formDir = dirFrom;
+  }
+
+  toChange.father = toDir._id;
+  toDir.files.push(toChange._id);
+  formDir.files = removeItemOnce(formDir.files, {
+    value: toChange._id,
+  });
 };

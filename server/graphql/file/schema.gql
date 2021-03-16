@@ -12,10 +12,16 @@ type File {
 
 
 type Query {
-  getFilesInDirs(dirIds: [String]!): [File]!
+  files(ids: [String]!): [File]!
+  filesInDirs(dirIds: [String]!): [File]!
 }
 
 type Mutation {
   touch(name: String!, where: String!): File
   rmFile(fileId: String!): File
+  changeFileName(id: String!, name: String!): File!
+  changeFileFather(id: String!, newFather: String!): File!
+  changeFileOwnership(id: String!, newOwner: String!): File!
+  giveFileAccess(id: String!, who: String!, newAccess: LevelEnum): File!
+  removeFileAccess(id: String!, who: String!): File!
 }
