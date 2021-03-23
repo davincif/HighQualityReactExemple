@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const USER_LOGIN = gql`
-  query login($nick: String!, $password: String!) {
+  mutation login($nick: String!, $password: String!) {
     login(nick: $nick, password: $password) {
       # _id
       nick
@@ -9,7 +9,7 @@ export const USER_LOGIN = gql`
       # password
       email
       birth
-      accessLevel
+      createdAt
       active
       # __typename
     }

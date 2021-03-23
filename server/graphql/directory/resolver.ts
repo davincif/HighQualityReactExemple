@@ -38,6 +38,14 @@ export default {
 
       return dirs;
     },
+    userDirectories: async (_: any, { id }: any, { req }: any) => {
+      // request authentication
+      let user = await protectRoute(req.nick);
+
+      let dirs: DirectoryMetadata;
+
+      return;
+    },
   },
   Mutation: {
     mkdir: async (_: any, { name, where }: any, { req }: any) => {

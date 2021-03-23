@@ -1,7 +1,7 @@
 // Third party libs
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useLazyQuery } from "@apollo/client";
+import { FetchResult, useLazyQuery } from "@apollo/client";
 
 // material-ui
 import {
@@ -20,11 +20,12 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 
 // Internal imports
 import { useStyles } from "./LoginStyle";
+import LoginPresenter from "./LoginPresenter";
 import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
 import { capitalize, capitalizeInitials } from "../../Reducers/Locale/Tools";
 import { UserInfoContext } from "../../Reducers/UserInfo/UserInfoContext";
 import Navbar from "../../Components/Navbar/Navbar";
-import { USER_LOGIN } from "../../GraphQL/Queries";
+// import { USER_LOGIN } from "../../GraphQL/Queries";
 
 function Login(props?: {}) {
   const { language } = useContext(LocaleContext);
@@ -34,30 +35,33 @@ function Login(props?: {}) {
 
   const [usernick, setUsernick] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [user_login, { error, data }] = useLazyQuery(USER_LOGIN);
+  const { user_login, user_login_loading } = LoginPresenter();
 
   const classes = useStyles();
 
-  useEffect(() => {
-    setLoading(false);
-
-    if (error) {
-      console.error("error", error);
-    } else if (data) {
-      if (data.login) {
-        infoDispatch({ type: "LOGIN", data });
-        history.push("/userhome");
-      } else {
-        infoDispatch({ type: "LOGOUT" });
-      }
-    }
-  }, [error, data]);
-
-  const handlerLogin = () => {
-    setLoading(true);
+  const handlerLogin = async (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    console.log("user_login_loading", user_login_loading);
     if (usernick && password) {
-      user_login({ variables: { nick: usernick, password: password } });
+      let ret: any; // FetchResult<any, Record<string, any>, Record<string, any>>
+      try {
+        ret = await user_login({
+          variables: { nick: usernick, password: password },
+        });
+      } catch (error) {
+        console.error("error", error);
+      }
+
+      if (ret) {
+        if (ret.data.login) {
+          infoDispatch({ type: "LOGIN", data: ret.data });
+          history.push("/userhome");
+        } else {
+          infoDispatch({ type: "LOGOUT" });
+        }
+      }
     }
   };
 
@@ -73,7 +77,7 @@ function Login(props?: {}) {
           <Typography component="h1" variant="h5">
             {capitalizeInitials(language.msgs.sign_in)}
           </Typography>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} autoComplete="off" noValidate>
             <TextField
               variant="outlined"
               margin="normal"
@@ -82,10 +86,9 @@ function Login(props?: {}) {
               id="usernick"
               label={language.msgs.nick}
               name="usernick"
-              autoComplete="usernick"
               autoFocus
               onChange={(e) => setUsernick(e.target.value)}
-              disabled={loading}
+              disabled={user_login_loading}
             />
             <TextField
               variant="outlined"
@@ -96,25 +99,19 @@ function Login(props?: {}) {
               label={language.msgs.password}
               type="password"
               id="password"
-              autoComplete="current-password"
               onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
+              disabled={user_login_loading}
             />
-            {/* <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label={capitalize(language.msgs.remember_me)}
-              disabled={loading}
-            /> */}
             <Button
-              // type="submit"
+              type="submit"
               fullWidth
               variant="contained"
               color="primary"
               className={classes.submit}
               onClick={handlerLogin}
-              disabled={loading}
+              disabled={user_login_loading}
             >
-              {loading ? (
+              {user_login_loading ? (
                 <CircularProgress />
               ) : (
                 <div>{capitalizeInitials(language.msgs.sign_in)}</div>

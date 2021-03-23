@@ -30,6 +30,7 @@ type RecursiveDirectory {
 type Query {
   directories(ids: [String]!): [Directory]!
   recursiveDirectories(ids: [String]!): [RecursiveDirectory]!
+  userDirectories(id: String!): Directory
 }
 
 type Mutation {

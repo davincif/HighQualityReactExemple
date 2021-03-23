@@ -39,7 +39,22 @@ export default {
   Date: dateScalar,
   DateTime: dateTimeScalar,
   Query: {
+    users: async (parent: any, args: any, { req }: any) => {
+      // request authentication
+      await protectRoute(req.nick);
+
+      return getAllUsers();
+    },
+    user: async (_: any, { nick }: any, { req }: any) => {
+      // request authentication
+      await protectRoute(req.nick);
+
+      return findUser({ nick });
+    },
+  },
+  Mutation: {
     login: async (_: any, { nick, password }: any, { res }: any) => {
+      // TODO: change we deal with date in this functions
       const now = new Date();
       const maximumExpirationDate = new Date(
         now.getFullYear(),
@@ -116,20 +131,6 @@ export default {
 
       return data.user;
     },
-    users: async (parent: any, args: any, { req }: any) => {
-      // request authentication
-      await protectRoute(req.nick);
-
-      return getAllUsers();
-    },
-    user: async (_: any, { nick }: any, { req }: any) => {
-      // request authentication
-      await protectRoute(req.nick);
-
-      return findUser({ nick });
-    },
-  },
-  Mutation: {
     createUser: async (_: any, { data }: any) => {
       // const session = await dbconnection.startSession();
       // session.startTransaction();

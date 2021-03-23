@@ -24,13 +24,13 @@ input UserInput {
 
 
 type Query {
-  login(nick: String!, password: String!): User
   users: [User]!
   # user(id: ID!): User
   user(nick: String!): User
 }
 
 type Mutation {
+  login(nick: String!, password: String!): User
   createUser(data: UserInput!): User!
   updateUser(id: ID, data: UserInput!): User!
 }

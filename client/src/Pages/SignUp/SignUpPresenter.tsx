@@ -2,7 +2,7 @@
 import { useMutation } from "@apollo/client";
 
 // Internal imports
-import { USER_CREATE } from "../../GraphQL/Queries";
+import { USER_CREATE } from "../../GraphQL/Mutations";
 import { capitalize } from "../../Reducers/Locale/Tools";
 
 type formField = {
