@@ -25,7 +25,6 @@ import { LocaleContext } from "../../Reducers/Locale/LocaleContext";
 import { capitalize, capitalizeInitials } from "../../Reducers/Locale/Tools";
 import { UserInfoContext } from "../../Reducers/UserInfo/UserInfoContext";
 import Navbar from "../../Components/Navbar/Navbar";
-// import { USER_LOGIN } from "../../GraphQL/Queries";
 
 function Login(props?: {}) {
   const { language } = useContext(LocaleContext);

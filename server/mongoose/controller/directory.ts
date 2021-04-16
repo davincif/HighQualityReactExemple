@@ -282,6 +282,21 @@ export const updateDir = async ({
 };
 
 /**
+ * Find all Directories whose ownership is 'userId'.
+ * @param userId The User ID
+ * @param options mongoose options.
+ * @returns The directories found.
+ */
+export const findUserDirectories = async (
+  userId: string,
+  options?: QueryOptions
+) => {
+  return await Directory.find({ owner: userId }, undefined, options);
+};
+
+/*Local Funtions*/
+
+/**
  * Move 'whatToChange' from 'dirTo' to 'dirFrom'.
  * @param whatToChange Id or Object of the directory whos is being moved.
  * @param dirTo Id or Object of the directory where the item is being moved to.

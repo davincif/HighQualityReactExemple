@@ -56,10 +56,18 @@ const startServer = ({ typeDefs, resolvers }: any) => {
   // Opening Express Server
   const app = express();
 
+  // app.use(cors(corsOptions));
   app.use(cookieParser());
 
   // Add Express as Middeware for Apollo
-  server.applyMiddleware({ app });
+  server.applyMiddleware({
+    app,
+    cors: {
+      origin: "http://localhost:3000",
+      optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+      credentials: true,
+    },
+  });
 
   // Opening Express Server Listener
   app

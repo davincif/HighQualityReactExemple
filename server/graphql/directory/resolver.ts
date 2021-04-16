@@ -9,6 +9,7 @@ import {
 import {
   createDirectory,
   findDirectoryByID,
+  findUserDirectories,
   rmDir,
   updateDir,
 } from "../../mongoose/controller/directory";
@@ -42,9 +43,11 @@ export default {
       // request authentication
       let user = await protectRoute(req.nick);
 
-      let dirs: DirectoryMetadata;
+      let dirs: DirectoryMetadata[] = await findUserDirectories(
+        id ? id : user._id
+      );
 
-      return;
+      return dirs;
     },
   },
   Mutation: {

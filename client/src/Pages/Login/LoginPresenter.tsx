@@ -1,5 +1,5 @@
 // Third party libs
-import { ApolloError, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 
 // Internal imports
 import { USER_LOGIN } from "../../GraphQL/Mutations";

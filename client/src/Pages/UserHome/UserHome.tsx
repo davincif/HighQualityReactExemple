@@ -1,5 +1,8 @@
 // Third party libs
 import React, { useContext, useEffect, useState } from "react";
+import { useQuery } from "@apollo/client";
+
+// material ui
 import {
   Breadcrumbs,
   CssBaseline,
@@ -20,6 +23,7 @@ import { capitalize } from "../../Reducers/Locale/Tools";
 import Navbar from "../../Components/Navbar/Navbar";
 import Item from "../../Components/Item/Item";
 import AuthRequired from "../../Components/AuthRequired/AuthRequired";
+import { USER_DIRECTORIES } from "../../GraphQL/Queries";
 
 const initialTree: DirType = {
   name: "Home",
@@ -76,6 +80,10 @@ function UserHome(props?: {}) {
   });
   const [lastClickedFile, setLastClickedFile] = useState(-1);
   const [lastClickedDir, setLastClickedDir] = useState(-1);
+  const { loading, error, data, refetch } = useQuery(USER_DIRECTORIES);
+
+  if (error) console.error(`Error! ${error}`);
+  console.log("data", data);
 
   useEffect(() => {
     root.loadTree({ ...initialTree, parents: mockFileTree });
@@ -360,9 +368,10 @@ function UserHome(props?: {}) {
       }}
     >
       <AuthRequired />
+      <CssBaseline />
 
       <Navbar />
-      <CssBaseline />
+
       <div className={classes.mainContainer}>
         <Breadcrumbs
           // maxItems={2}

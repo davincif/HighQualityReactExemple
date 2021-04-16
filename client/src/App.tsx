@@ -40,7 +40,8 @@ const link = from([
   errorLink,
   new HttpLink({
     uri: "http://localhost:4000/graphql",
-    credentials: "same-origin",
+    // credentials: "same-origin",
+    credentials: "include",
   }),
 ]);
 
