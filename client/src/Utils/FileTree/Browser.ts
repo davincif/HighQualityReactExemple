@@ -47,8 +47,8 @@ export class TreeBrowser implements Browser {
       // cannot navigate to a file or dir is out of range
       if (
         dir < 0 &&
-        dir >= this.pointer.parents.length &&
-        isFile(this.pointer.parents[dir])
+        dir >= this.pointer.children.length &&
+        isFile(this.pointer.children[dir])
       ) {
         return false;
       }
@@ -61,7 +61,7 @@ export class TreeBrowser implements Browser {
     }
 
     // move pointer
-    this.pointer = this.pointer.parents[dir] as DirType;
+    this.pointer = this.pointer.children[dir] as DirType;
     this.navStack.push(this.pointer);
 
     return true;
@@ -79,7 +79,7 @@ export class TreeBrowser implements Browser {
     // get in the tree, address by address
     address.slice(1, address.length).map((getIn) => {
       // search address in the new pointer directory
-      let found = newPointer.parents.filter((value) => getIn === value.name);
+      let found = newPointer.children.filter((value) => getIn === value.name);
 
       // address not found in dir or address is a file
       if (found.length === 0 || isFile(found[0])) {

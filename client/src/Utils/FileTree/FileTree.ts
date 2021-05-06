@@ -14,20 +14,20 @@ export class FileTree implements FileTreeInterface {
     subTree: DirType,
     adapter?: (userTree: Object) => FSItem
   ): DirType {
-    // adapt all parents in this directory
-    let adapteds = subTree.parents.map((value) => {
+    // adapt all children in this directory
+    let adapteds = subTree.children.map((value) => {
       return adapter ? adapter(value) : value;
     });
 
     // check names
     if (!areNamesDiferents(adapteds)) {
       throw new Error(
-        `in the directory "${subTree.name}" there are parents with the same name`
+        `in the directory "${subTree.name}" there are children with the same name`
       );
     }
 
     // load all directories inside this dir
-    subTree.parents = adapteds.map((value) => {
+    subTree.children = adapteds.map((value) => {
       if (!isFile(value)) {
         value.father = value as DirType;
         value = this.recursiveLoadTree(value as DirType, adapter);
@@ -67,9 +67,9 @@ export class FileTree implements FileTreeInterface {
   public getItem(name: string): [FSItem, number] | [] {
     let found: [FSItem, number] | [] = [];
 
-    for (let dir in this.browser.pointer.parents) {
-      if (this.browser.pointer.parents[dir].name === name) {
-        found = [this.browser.pointer.parents[dir], Number(dir)];
+    for (let dir in this.browser.pointer.children) {
+      if (this.browser.pointer.children[dir].name === name) {
+        found = [this.browser.pointer.children[dir], Number(dir)];
         break;
       }
     }
@@ -86,17 +86,17 @@ export class FileTree implements FileTreeInterface {
   }
 
   public dragItems(items: number[], to: number): FSItem[] {
-    let here = this.browser.pointer.parents;
-    let dragTo = this.browser.pointer.parents[to] as DirType;
+    let here = this.browser.pointer.children;
+    let dragTo = this.browser.pointer.children[to] as DirType;
     if (!isFile(dragTo)) {
       let itemsAdded: FSItem[] = [];
 
       for (let item of items) {
-        dragTo.parents.push(here[item]);
+        dragTo.children.push(here[item]);
         itemsAdded.push(here[item]);
         here[item] = undefined as any;
       }
-      this.browser.pointer.parents = here.filter(
+      this.browser.pointer.children = here.filter(
         (value) => value !== undefined
       );
 

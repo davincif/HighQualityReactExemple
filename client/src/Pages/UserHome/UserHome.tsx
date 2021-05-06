@@ -27,50 +27,50 @@ import { USER_DIRECTORIES } from "../../GraphQL/Queries";
 
 const initialTree: DirType = {
   name: "Home",
-  parents: [],
+  children: [],
 };
 const root = new FileTree(initialTree);
+const mockFileTree: any = [
+  {
+    name: "Xablau",
+    children: [],
+  },
+  {
+    name: "Curió",
+    children: [],
+  },
+  {
+    name: "Sun",
+    children: [],
+  },
+  {
+    name: "Family",
+    children: [],
+  },
+  {
+    name: "Наталья",
+    children: [],
+  },
+  {
+    name: "Jerenilson Bezerra da Silva",
+  },
+  {
+    name: "ñon",
+  },
+  {
+    name: "Лиза",
+  },
+  {
+    name: "Canaã",
+  },
+  {
+    name: "Галина",
+  },
+];
 
 function UserHome(props?: {}) {
   const classes = useStyles();
   const { language } = useContext(LocaleContext);
-  const mockFileTree: any = [
-    {
-      name: "Xablau",
-      parents: [],
-    },
-    {
-      name: "Curió",
-      parents: [],
-    },
-    {
-      name: "Sun",
-      parents: [],
-    },
-    {
-      name: "Family",
-      parents: [],
-    },
-    {
-      name: "Наталья",
-      parents: [],
-    },
-    {
-      name: "Jerenilson Bezerra da Silva",
-    },
-    {
-      name: "ñon",
-    },
-    {
-      name: "Лиза",
-    },
-    {
-      name: "Canaã",
-    },
-    {
-      name: "Галина",
-    },
-  ];
   const [tree, setTree] = useState(root.getTree());
   const [fileSel, setFileSel] = useState<SelectionData>({
     fname: { selected: false, feedback: VisualFeedBack.NONE },
@@ -83,10 +83,9 @@ function UserHome(props?: {}) {
   const { loading, error, data, refetch } = useQuery(USER_DIRECTORIES);
 
   if (error) console.error(`Error! ${error}`);
-  console.log("data", data);
 
   useEffect(() => {
-    root.loadTree({ ...initialTree, parents: mockFileTree });
+    root.loadTree({ ...initialTree, children: mockFileTree });
     setTree(root.getTree());
   }, []);
 
@@ -94,7 +93,7 @@ function UserHome(props?: {}) {
     let selObj: any = {};
 
     // for file
-    for (let item of tree.parents.filter((value) => isFile(value))) {
+    for (let item of tree.children.filter((value) => isFile(value))) {
       selObj[item.name] = { selected: false, feedback: VisualFeedBack.NONE };
     }
 
@@ -104,7 +103,7 @@ function UserHome(props?: {}) {
 
     selObj = {};
     // for dir
-    for (let item of tree.parents.filter((value) => !isFile(value))) {
+    for (let item of tree.children.filter((value) => !isFile(value))) {
       selObj[item.name] = { selected: false, feedback: VisualFeedBack.NONE };
     }
 
@@ -162,7 +161,7 @@ function UserHome(props?: {}) {
         toUpdate = { ...dirSel };
         if (lastClickedDir === -1) {
           setLastClickedDir(currentPos);
-          toUpdate[tree.parents[currentPos].name].selected = selectIt;
+          toUpdate[tree.children[currentPos].name].selected = selectIt;
         } else {
           let direction = currentPos < lastClickedDir ? 1 : -1;
 
@@ -171,7 +170,7 @@ function UserHome(props?: {}) {
             pos !== lastClickedDir;
             pos = pos + direction
           ) {
-            toUpdate[tree.parents[pos].name].selected = selectIt;
+            toUpdate[tree.children[pos].name].selected = selectIt;
           }
 
           animate(name, VisualFeedBack.SELECT, toUpdate, 200, false);
@@ -259,7 +258,7 @@ function UserHome(props?: {}) {
         toUpdate = { ...fileSel };
         if (lastClickedFile === -1) {
           setLastClickedFile(currentPos);
-          toUpdate[tree.parents[currentPos].name].selected = selectIt;
+          toUpdate[tree.children[currentPos].name].selected = selectIt;
         } else {
           let direction = currentPos < lastClickedFile ? 1 : -1;
 
@@ -268,7 +267,7 @@ function UserHome(props?: {}) {
             pos !== lastClickedFile;
             pos = pos + direction
           ) {
-            toUpdate[tree.parents[pos].name].selected = selectIt;
+            toUpdate[tree.children[pos].name].selected = selectIt;
           }
 
           animate(name, VisualFeedBack.SELECT, toUpdate, 200, true);
@@ -395,7 +394,7 @@ function UserHome(props?: {}) {
           ))}
         </Breadcrumbs>
 
-        {tree.parents.filter((value) => !isFile(value)).length > 0 ? (
+        {tree.children.filter((value) => !isFile(value)).length > 0 ? (
           <Typography variant="h5" color="textPrimary">
             {capitalize(language.msgs.folders)}
           </Typography>
@@ -403,7 +402,7 @@ function UserHome(props?: {}) {
 
         {/* rendering directories */}
         <div className={classes.flexcont}>
-          {tree.parents
+          {tree.children
             .filter((value) => !isFile(value))
             .map((dir: DirType) => (
               <Item
@@ -453,7 +452,7 @@ function UserHome(props?: {}) {
                     );
                   } else {
                     // get all files to be moved
-                    selecteds = tree.parents.map((value, index) => {
+                    selecteds = tree.children.map((value, index) => {
                       if (
                         value.name === dir.name &&
                         dirSel[dir.name]?.selected
@@ -495,7 +494,7 @@ function UserHome(props?: {}) {
                       // move
                       root.dragItems(
                         selecteds.map((value) => value[1]),
-                        tree.parents.indexOf(dir)
+                        tree.children.indexOf(dir)
                       );
 
                       // update tree
@@ -514,14 +513,14 @@ function UserHome(props?: {}) {
 
         <Divider variant="middle" className={classes.divider} />
 
-        {tree.parents.filter((value) => isFile(value)).length > 0 ? (
+        {tree.children.filter((value) => isFile(value)).length > 0 ? (
           <Typography variant="h5" color="textPrimary">
             {capitalize(language.msgs.files)}
           </Typography>
         ) : null}
         <div className={classes.flexcont}>
           {/* rendering files */}
-          {tree.parents
+          {tree.children
             .filter((value) => isFile(value))
             .map((file) => (
               <Item

@@ -126,36 +126,32 @@ export interface Browser {
  * A generic File Representation
  * @param name File name.
  * @type string
- * @param data Any custom data from the user.
- * @type Object
  * @param father Where is this file inserted in.
  * @type DirType
  */
 export type FileType = {
+  [field: string]: any;
   name: string;
-  data?: Object;
 
   father: DirType;
-  parents: never[];
+  children: never[];
 };
 
 /**
  * A generic Directory Representation
  * @param name File name.
  * @type string
- * @param data Any custom data from the user.
- * @type Object
  * @param father Where is this directory inserted in.
  * @type DirType
- * @param parents List of files and orther dir inside this dir.
+ * @param children List of files and orther dir inside this dir.
  * @type DirType[]
  */
 export type DirType = {
+  [field: string]: any;
   name: string;
-  data?: Object;
 
   father?: DirType;
-  parents: FSItem[];
+  children: FSItem[];
 };
 
 /**
